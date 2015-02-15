@@ -5,5 +5,14 @@
 # Home page
 GET     /                           controllers.Application.index
 
+# API definition
+->      /api/sample                 controllers.SampleAPIRouter
+->      /api/todo                   controllers.TodoRouter
+
+
+# API info
+GET     /api-info/todo              controllers.TodoRouter.apiInfo
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
