@@ -40,7 +40,7 @@ object Todo extends ActiveRecord[Todo] {
     }
   }
   
-  case class Composite(val id: Option[String], name: String, priority: Int, willingness: Int,
+  case class Composite(id: Option[String], name: String, priority: Int, willingness: Int,
                   tags: Option[String], labels: Option[String],
                   context: Option[String], category: Option[String],
                   deadline: Option[Reminder.Frozen],

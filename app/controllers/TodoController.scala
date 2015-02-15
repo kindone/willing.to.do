@@ -21,8 +21,7 @@ import play.api.Logger
  *
  */
 
-object TodoController extends RestReadController[models.Todo.Composite]
-  with ResourceCreate with ResourceWrite {
+object TodoController extends RestCrudController[models.Todo.Composite] {
 
   def name = "todo"
 
@@ -63,9 +62,15 @@ object TodoController extends RestReadController[models.Todo.Composite]
   def write(todo: models.Todo.Composite) = Action(parse.json) { request =>
     implicit val format = todoFormat
     val newTodo = request.body.as[models.Todo.Composite].copy(id = todo.id)
-    val createdTodo = models.Todo.update(newTodo).frozen
-    Ok(Json.toJson(createdTodo.composite))
+    val updatedTodo = models.Todo.update(newTodo).frozen
+    Ok(Json.toJson(updatedTodo.composite))
   }
+  
+  def delete(todo: models.Todo.Composite) = Action { request =>
+    models.Todo.delete(todo.id.get)
+    Ok(Json.toJson(""))
+  }
+  
 }
 
 object TodoRouter extends RestResourceRouter(TodoController) with ApiInfo
