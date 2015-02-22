@@ -19,5 +19,7 @@ libraryDependencies ++= Seq(
 	"26lights"  %% "playr"  % "0.4.0",
 	"org.postgresql" % "postgresql" % "9.3-1102-jdbc41",
 	"net.fwbrasil" %% "activate-play" % "1.7" exclude("org.scala-stm", "scala-stm_2.10.0"),
-	"net.fwbrasil" %% "activate-jdbc-async" % "1.7" exclude("org.scala-stm", "scala-stm_2.10.0")
+	"net.fwbrasil" %% "activate-jdbc-async" % "1.7" exclude("org.scala-stm", "scala-stm_2.10.0"),
+	"org.scalacheck" %% "scalacheck" % "1.12.2" % "test",
+	"org.scalatestplus" %% "play" % "1.1.0" % "test"
 )
