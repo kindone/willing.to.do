@@ -1,0 +1,9 @@
+
+#left-sidebar,.left-sidebar
+{
+	/*border-right:1px solid gray;*/
+}
+
+.nav-tabs .active {	
+	text-decoration:underline;
+}
