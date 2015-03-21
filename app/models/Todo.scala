@@ -30,28 +30,32 @@ object Todo extends ActiveRecord[Todo] {
                     noteId: Option[String],
                     parentId: Option[String]) {
     def composite = transactional {
-      val deadline = deadlineId.flatMap(Reminder.find(_)).map(_.frozen)
-      val reminder = deadlineId.flatMap(Reminder.find(_)).map(_.frozen)
-      val review = deadlineId.flatMap(Reminder.find(_)).map(_.frozen)
-      val note = noteId.flatMap(Note.find(_)).map(_.frozen)
       
+      val (deadline, reminder, review) = Seq(deadlineId, reminderId, reviewId).map { r =>
+        r.flatMap(Reminder.find(_)).map(_.frozen)
+      } match {
+        case List(a, b, c) => (a,b,c)
+      }
+      
+      val note = noteId.flatMap(Note.find(_)).map(_.frozen)
+
       Composite(id, name, priority, willingness, tags, labels, context, category,
         deadline, reminder, review, note, parentId)
     }
   }
-  
+
   case class Composite(id: Option[String], name: String, priority: Int, willingness: Int,
-                  tags: Option[String], labels: Option[String],
-                  context: Option[String], category: Option[String],
-                  deadline: Option[Reminder.Frozen],
-                  reminder: Option[Reminder.Frozen],
-                  review: Option[Reminder.Frozen],
-                  note: Option[Note.Frozen],
-                  parentId: Option[String])
-  
+                       tags: Option[String], labels: Option[String],
+                       context: Option[String], category: Option[String],
+                       deadline: Option[Reminder.Frozen],
+                       reminder: Option[Reminder.Frozen],
+                       review: Option[Reminder.Frozen],
+                       note: Option[Note.Frozen],
+                       parentId: Option[String])
+
   implicit val noteFormat = Note.jsonFormat
-  implicit val reminderFormat = Reminder.jsonFormat                  
-  val jsonFormat = Json.format[Composite]               
+  implicit val reminderFormat = Reminder.jsonFormat
+  val jsonFormat = Json.format[Composite]
 
   def create(todo: Composite) = transactional {
 
@@ -81,7 +85,7 @@ object Todo extends ActiveRecord[Todo] {
   }
 
   def update(t: Composite) = transactional {
-    
+
     val todo = find(t.id.get).get
 
     todo.name = t.name
@@ -91,40 +95,28 @@ object Todo extends ActiveRecord[Todo] {
     todo.labels = t.labels
     todo.ctx = t.context
     todo.category = t.category
-    
+
     // create/update/delete according to the given 
-    todo.deadline match {
-      case Some(original) => t.deadline match {
-        case Some(r) => Reminder.update(r.copy(id=Some(original.id)))
-        case None => Reminder.delete(original.id)
+
+    Seq((todo.deadline, t.deadline), (todo.reminder, t.reminder), (todo.review, t.review)).foreach { case (oldr, newr) =>
+      oldr match {
+        case Some(original) => newr match {
+          case Some(r) => Reminder.update(r.copy(id = Some(original.id)))
+          case None    => Reminder.delete(original.id)
+        }
+        case None => newr.map(Reminder.create(_))
       }
-      case None => t.deadline.map(Reminder.create(_))
     }
-    
-    todo.reminder match {
-      case Some(original) => t.reminder match {
-        case Some(r) => Reminder.update(r.copy(id=Some(original.id)))
-        case None => Reminder.delete(original.id)
-      }
-      case None => t.reminder.map(Reminder.create(_))
-    }
-    
-    todo.review match {
-      case Some(original) => t.review match {
-        case Some(r) => Reminder.update(r.copy(id=Some(original.id)))
-        case None => Reminder.delete(original.id)
-      }
-      case None => t.review.map(Reminder.create(_))
-    }    
- 
+
+
     todo.note match {
       case Some(original) => t.note match {
-        case Some(n) => Note.update(n.copy(id=Some(original.id)))
-        case None => Note.delete(original.id)
+        case Some(n) => Note.update(n.copy(id = Some(original.id)))
+        case None    => Note.delete(original.id)
       }
       case None => t.note.map(Note.create(_))
     }
-    
+
     val parent = t.parentId.map(Todo.find(_).get)
     todo.parent = parent
 
