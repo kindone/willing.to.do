@@ -6,7 +6,7 @@
 	<meta http-equiv="refresh" content="5" >
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Index</title>
+	<title>Willing.to.do</title>
 	<!-- bootstrap files -->
 	<link rel="stylesheet"
 		href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/superhero/bootstrap.min.css">
@@ -84,12 +84,7 @@
 					  <!-- Tab panes -->
 					  <div class="tab-content">
 					    <div role="tabpanel" class="tab-pane active" id="projects">
-					    	<ul class="list-group">
-					    		<li class="list-group-item">Health</li>
-					    		<li class="list-group-item">Administrative</li>
-					    		<li class="list-group-item">%hierarchy should be available here%</li>
-					    		<li class="list-group-item">Code</li>
-					    	</ul>
+					    	@partials.projectview()
 					    </div>
 					    <div role="tabpanel" class="tab-pane" id="labels">
 					    	<ul>
@@ -97,7 +92,7 @@
 					    		<li>relaxing</li>
 					    		<li>office</li>
 					    	</ul>
-					    </div>					    
+					    </div>
 					  </div>
 					
 					</div>
@@ -115,14 +110,15 @@
 					-->					
 				</div>
 				<ol class="breadcrumb">
-				  <li><a href="#">Administrative</a></li>
-				  <li class="active">Family &amp; Social</li>
+				  <li><a href="#">Code</a></li>
+				  <li class="active">Willing.to.do</li>
 				  
 				</ol>
 
                 <div id="content">
                     <!-- header for each category (if exists) -->
                     <!-- list up (hiearchical structure) of todos -->
+                    @partials.todoview()
                 </div>
 
 			</div>

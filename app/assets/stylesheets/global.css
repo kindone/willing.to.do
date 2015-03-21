@@ -7,3 +7,41 @@
 .nav-tabs .active {	
 	text-decoration:underline;
 }
+
+
+ul.hierarchy {
+    list-style-type:none;
+}
+
+/** todo: replace color with less variable **/
+ul.hierarchy p.hierarchy-item-row  {
+    border-bottom:1px solid gray;
+    margin:0px;
+    padding:4px;
+}
+
+span.hierarchy-item-row-body {
+
+}
+
+/** todo: replace color with less variable **/
+ul.hierarchy p.hierarchy-item-row:hover  {
+    background-color: #4E5D6C;
+}
+
+ul.hierarchy  p.hierarchy-item-row:hover > a.hierarchy-move-handle > span.glyphicon-align-justify {
+    visibility:visible !important;
+}
+
+ul.hierarchy  p.hierarchy-item-row:hover span.glyphicon-option-horizontal {
+    visibility:visible !important;
+}
+
+ul.hierarchy  p.hierarchy-item-row:hover span.glyphicon-blackboard {
+    visibility:visible !important;
+}
+
+ul.hierarchy  p.hierarchy-item-row:hover a.hierarchy-move-handle:hover > span.glyphicon-align-justify {
+    cursor:move;
+}
+

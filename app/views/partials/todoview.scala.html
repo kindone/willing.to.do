@@ -1,0 +1,23 @@
+@()
+<!-- Display todo-->
+
+<div class="hierarchy">
+    <ul class="hierarchy">
+        <li class="hierarchy-item">@partials.hierarchyitem("Design and UX issues")</li>
+        <li class="hierarchy-item">@partials.hierarchyitem("Server-side implementation", true)
+            <ul class="hierarchy">
+                <li class="hierarchy-item">@partials.hierarchyitem("authentication")</li>
+                <li class="hierarchy-item">@partials.hierarchyitem("Authorization", true)
+                    <ul class="hierarchy">
+                        <li class="hierarchy-item">@partials.hierarchyitem("API should block unauhorized")</li>
+                        <li class="hierarchy-item">@partials.hierarchyitem("main page should provide unauhorized access")</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li class="hierarchy-item">@partials.hierarchyitem("Client-side implementation")</li>
+    </ul>
+</div>
+<div>
+    <p class="text-primary"><a>+ Add Task</a></p>
+</div>
