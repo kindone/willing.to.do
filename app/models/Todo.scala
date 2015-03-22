@@ -12,12 +12,12 @@ class Todo(var name: String, var priority: Int, var willingness: Int,
            var ctx: Option[String], var category: Option[String],
            var deadline: Option[Reminder], var reminder: Option[Reminder], var review: Option[Reminder],
            var note: Option[Note],
-           var parent: Option[Todo]) extends Entity {
+           var parent: Option[Todo], var owner:User) extends Entity {
   def frozen() = transactional {
     Todo.Frozen(Some(id), name, priority, willingness,
       tags, labels, ctx, category,
       deadline.map(_.id), reminder.map(_.id), review.map(_.id),
-      note.map(_.id), parent.map(_.id))
+      note.map(_.id), parent.map(_.id), owner.id)
   }
 }
 
@@ -28,7 +28,8 @@ object Todo extends ActiveRecord[Todo] {
                     context: Option[String], category: Option[String],
                     deadlineId: Option[String], reminderId: Option[String], reviewId: Option[String],
                     noteId: Option[String],
-                    parentId: Option[String]) {
+                    parentId: Option[String],
+                    ownerId: String) {
     def composite = transactional {
       
       val (deadline, reminder, review) = Seq(deadlineId, reminderId, reviewId).map { r =>
@@ -40,7 +41,7 @@ object Todo extends ActiveRecord[Todo] {
       val note = noteId.flatMap(Note.find(_)).map(_.frozen)
 
       Composite(id, name, priority, willingness, tags, labels, context, category,
-        deadline, reminder, review, note, parentId)
+        deadline, reminder, review, note, parentId, ownerId)
     }
   }
 
@@ -51,7 +52,8 @@ object Todo extends ActiveRecord[Todo] {
                        reminder: Option[Reminder.Frozen],
                        review: Option[Reminder.Frozen],
                        note: Option[Note.Frozen],
-                       parentId: Option[String])
+                       parentId: Option[String],
+                       ownerId:String)
 
   implicit val noteFormat = Note.jsonFormat
   implicit val reminderFormat = Reminder.jsonFormat
@@ -64,7 +66,8 @@ object Todo extends ActiveRecord[Todo] {
         tags, labels, context, category,
         deadline, reminder, review,
         note,
-        parentId) =>
+        parentId,
+        ownerId) =>
 
         val mDeadline = deadline.map(Reminder.create(_))
         val mReminder = reminder.map(Reminder.create(_))
@@ -78,8 +81,10 @@ object Todo extends ActiveRecord[Todo] {
         // find parent if exists
         val parent = parentId.flatMap(Todo.find(_))
 
+        val owner = User.find(ownerId).get
+
         new Todo(name, priority, willingness, tags, labels, context, category,
-          mDeadline, mReminder, mReview, mNote, parent)
+          mDeadline, mReminder, mReview, mNote, parent, owner)
     }
 
   }

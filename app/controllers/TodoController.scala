@@ -35,7 +35,7 @@ object TodoController extends RestCrudController[models.Todo.Composite] {
     val note = t.noteId.flatMap(models.Note.find(_).map(_.frozen))
 
     models.Todo.Composite(t.id, t.name, t.priority, t.willingness, t.tags, t.labels,
-      t.context, t.category, deadline, reminder, review, note, t.parentId)
+      t.context, t.category, deadline, reminder, review, note, t.parentId, t.ownerId)
   }
 
   def list() = Action {
