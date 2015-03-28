@@ -3,16 +3,22 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET        /                     controllers.Application.index
+
+GET        /login                controllers.Application.authenticate
+GET        /signup               controllers.Application.signup
+GET        /quit                 controllers.Application.quit
+#GET        /loginform            controllers.Application.login
+#GET        /signupform           controllers.Application.signup
 
 # API definition
-->      /api/sample                 controllers.SampleAPIRouter
-->      /api/todo                   controllers.TodoRouter
+->         /api/sample           controllers.SampleAPIRouter
+->         /api/todo             controllers.TodoRouter
 
 
 # API info
-GET     /api-info/todo              controllers.TodoRouter.apiInfo
+GET        /api-info/todo        controllers.TodoRouter.apiInfo
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET        /assets/*file         controllers.Assets.at(path="/public", file)

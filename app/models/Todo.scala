@@ -30,6 +30,7 @@ object Todo extends ActiveRecord[Todo] {
                     noteId: Option[String],
                     parentId: Option[String],
                     ownerId: String) {
+
     def composite = transactional {
       
       val (deadline, reminder, review) = Seq(deadlineId, reminderId, reviewId).map { r =>

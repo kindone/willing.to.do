@@ -1,5 +1,7 @@
 package controllers
 
+import jp.t2v.lab.play2.auth.AuthElement
+import models.NormalUser
 import play.api.mvc._
 import twentysix.playr._
 import twentysix.playr.simple._
@@ -21,7 +23,7 @@ import play.api.Logger
  *
  */
 
-object TodoController extends RestCrudController[models.Todo.Composite] {
+object TodoController extends RestCrudController[models.Todo.Composite] with AuthElement with AuthConfigImpl {
 
   def name = "todo"
 
@@ -38,36 +40,36 @@ object TodoController extends RestCrudController[models.Todo.Composite] {
       t.context, t.category, deadline, reminder, review, note, t.parentId, t.ownerId)
   }
 
-  def list() = Action {
-    val todos = models.Todo.findAll.map(_.frozen).map { todo =>
+  def list() = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    val todos = models.User.todos(loggedIn.id.get).map(_.frozen).map { todo =>
       (todo.id, todo)
     }.toMap
 
     Ok(Json.toJson(todos.keys))
   }
 
-  def read(todo: models.Todo.Composite) = Action { 
+  def read(todo: models.Todo.Composite) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
     implicit val format = todoFormat
     Ok(Json.toJson(todo)) 
   }
 
-  def create = Action(parse.json) { request =>
+  def create = StackAction(parse.json, AuthorityKey -> NormalUser) { implicit request =>
     implicit val format = todoFormat
     val newTodo = request.body.as[models.Todo.Composite]
-    Logger.info(newTodo.toString)
-    val createdTodo = models.Todo.create(newTodo).frozen
+    //Logger.info(newTodo.toString)
+    val createdTodo = models.User.createTodo(loggedIn.id.get, newTodo).frozen
     Created(Json.toJson(createdTodo.composite))
   }
 
-  def write(todo: models.Todo.Composite) = Action(parse.json) { request =>
+  def write(todo: models.Todo.Composite) = StackAction(parse.json, AuthorityKey -> NormalUser) { implicit request =>
     implicit val format = todoFormat
     val newTodo = request.body.as[models.Todo.Composite].copy(id = todo.id)
-    val updatedTodo = models.Todo.update(newTodo).frozen
+    val updatedTodo = models.User.updateTodo(loggedIn.id.get, newTodo).frozen
     Ok(Json.toJson(updatedTodo.composite))
   }
   
-  def delete(todo: models.Todo.Composite) = Action { request =>
-    models.Todo.delete(todo.id.get)
+  def delete(todo: models.Todo.Composite) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    models.User.deleteTodo(loggedIn.id.get, todo.id.get)
     Ok(Json.toJson(""))
   }
   

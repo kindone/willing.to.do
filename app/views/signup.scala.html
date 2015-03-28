@@ -1,0 +1,7 @@
+@(signupForm:Form[Option[User.Frozen]])
+
+@helper.form(action = routes.Application.signup) {
+    @helper.inputText(signupForm("username"))
+    @helper.inputPassword(signupForm("password"))
+    @helper.inputPassword(signupForm("passwordconfirm"))
+}

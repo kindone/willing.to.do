@@ -1,0 +1,6 @@
+@(userForm:Form[Option[User.Frozen]])
+
+@helper.form(action = routes.Application.authenticate) {
+    @helper.inputText(userForm("username"))
+    @helper.inputPassword(userForm("password"))
+}
