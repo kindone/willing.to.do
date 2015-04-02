@@ -23,6 +23,22 @@ class User(var username: String, var password:String, val role:String) extends E
     }
     User.Frozen(Some(id), username, password, role_)
   }
+
+  def invariantUsernameMustBeUnique =
+
+    invariant {
+
+      query {
+
+        user: User =>
+
+          where((user.username :== username) :&&
+
+            (user.id :!= this.id)) select (1)
+
+      }.isEmpty
+
+    }
 }
 
 object User extends ActiveRecord[User] {

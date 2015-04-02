@@ -33,6 +33,27 @@ class AddIndexToSequencer extends Migration {
 	}
 }
 
+class AddUniqueIndexToUsername extends Migration {
+	def timestamp = 201504012245L
+
+	def up = {
+		customScript {
+			val connection = storage.directAccess
+			try {
+				connection
+					.prepareStatement("create unique index username_idx on User(username)")
+					.executeUpdate
+				connection.commit
+			} catch {
+				case e =>
+					connection.rollback
+					throw e
+			} finally
+				connection.close
+		}
+	}
+}
+
 class DevMigration extends ManualMigration {
 
 	def up = {
