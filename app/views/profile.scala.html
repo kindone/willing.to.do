@@ -1,11 +1,11 @@
-@(signupForm:Form[Option[User.Frozen]])
+@(profileForm:Form[Option[User.Frozen]])
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sign Up :: Willing.to.do</title>
+    <title>Edit Profile :: Willing.to.do</title>
       <!-- bootstrap files -->
     <link rel="stylesheet"
     href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/superhero/bootstrap.min.css">
@@ -45,27 +45,9 @@
       </div>
     </header>
 
-    <div>
-      @if(signupForm.hasGlobalErrors) {
-        <ul>
-        @for(error <- signupForm.globalErrors) {
-          <li>@error.messages</li>
-        }
-        </ul>
-      }
-
-      @if(signupForm.hasErrors) {
-        <ul>
-        @for(error <- signupForm.errors) {
-          <li>@error.key : @error.messages</li>
-        }
-        </ul>
-      }
-    </div>
-
     <div id="top-container" class="container">
       <div class="well">
-        @partials.signup(signupForm)
+        @partials.profile(profileForm)
       </div>
     </div>
   </body>

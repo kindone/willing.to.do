@@ -1,6 +1,8 @@
 package models
 
 import ActiveRecord._
+import net.fwbrasil.activate.entity.InvariantViolationException
+import org.mindrot.jbcrypt.BCrypt
 
 /**
  * Created by kindone on 15. 3. 22..
@@ -15,13 +17,16 @@ case object NormalUser extends Role {
   override def toString() = "normal_user"
 }
 
-class User(var username: String, var password:String, val role:String) extends Entity {
+class User(var username: String,
+           var hashedpassword:String,
+           val role:String) extends Entity {
+
   def frozen() = transactional {
     val role_ = role match {
       case "administrator" => Administrator
       case "normal_user" => NormalUser
     }
-    User.Frozen(Some(id), username, password, role_)
+    User.Frozen(Some(id), username, hashedpassword, role_)
   }
 
   def invariantUsernameMustBeUnique =
@@ -42,12 +47,16 @@ class User(var username: String, var password:String, val role:String) extends E
 }
 
 object User extends ActiveRecord[User] {
-  case class Frozen(id: Option[String], username: String, password:String, role:Role)
+  case class Frozen(id: Option[String],
+                    username: String,
+                    hashedpassword:String, role:Role)
 
   def todos(id: String) = Todo.findAll()
   def createTodo(id: String, todo:Todo.Composite) = Todo.create(todo)
   def updateTodo(id: String, todo:Todo.Composite) = Todo.update(todo)
   def deleteTodo(id: String, todoId:String) = Todo.delete(todoId)
+
+  import utils.BCrypt._ // implicit conversion
 
   override def delete(id: String) {
     transactional {
@@ -58,14 +67,33 @@ object User extends ActiveRecord[User] {
   }
 
   def authenticate(username:String, password:String):Option[User.Frozen] = transactional {
-    query {
-      (user:User) => where((user.username :== username) :&& (user.password :== password)) select(user)
-    }.headOption.map(_.frozen)
+    select[User].where(_.username :== username)
+      .filter(user => password.checkBcrypt(user.hashedpassword))
+      .headOption.map(_.frozen)
   }
 
-  def signup(username:String, password:String, passwordconfirm:String):Option[User.Frozen] = transactional {
-    if(password == passwordconfirm)
-      Some(new User(username, password, NormalUser.toString()).frozen)
+  def signup(username:String, password:(String, String)):Option[User.Frozen] = transactional {
+    if(password._1 == password._2) {
+      try {
+        Some(new User(username, password._1.bcrypt, NormalUser.toString()).frozen)
+      }
+      catch {
+        case e:InvariantViolationException =>
+          None
+      }
+    }
+    else
+      None
+  }
+
+  def update(id:String)
+            (oldpassword:String, password:(String,String)):Option[User.Frozen] = transactional {
+    if(password._1 == password._2) {
+      User.find(id).filter(user => oldpassword.checkBcrypt(user.hashedpassword)).headOption.map { user =>
+        user.hashedpassword = password._1.bcrypt
+        user.frozen()
+      }
+    }
     else
       None
   }

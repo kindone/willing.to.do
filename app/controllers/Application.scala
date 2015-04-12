@@ -2,7 +2,7 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import jp.t2v.lab.play2.auth.LoginLogout
+import jp.t2v.lab.play2.auth.{OptionalAuthElement, LoginLogout}
 import play.api.data._
 import play.api.data.Forms._
 import models.User
@@ -11,34 +11,35 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
-object Application extends Controller with LoginLogout with AuthConfigImpl{
+object Application extends Controller with LoginLogout with OptionalAuthElement with AuthConfigImpl{
 
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+  def index = StackAction { implicit request =>
+    loggedIn match {
+      case Some(user) => Ok(views.html.index("Your new application is ready."))
+      case None => Ok(views.html.intro(formForLogin, formForSignup))
+    }
+  }
+
+  // better remove and move to ajax-style one (included in index)
+  def signupForm = StackAction { implicit request =>
+    loggedIn match {
+      case Some(_) => Redirect(routes.Application.index())
+      case None => Ok(views.html.signup(formForSignup))
+    }
   }
   
   /** Your application's login form.  Alter it to fit your application */
-  val loginForm = Form {
+  val formForLogin = Form {
     mapping("username" -> email, "password" -> text)(User.authenticate)(_.map(u => (u.username, "")))
       .verifying("Invalid username or password", result => result.isDefined)
   }
 
-  val signupForm = Form {
-    mapping("username" -> email, "password" -> text, "passwordconfirm" -> text)(User.signup)(_.map(u => (u.username, "", "")))
-      .verifying("Invalid username or password", result => result.isDefined)
+  val formForSignup = Form {
+    mapping("username" -> email,
+      "password" -> tuple("main" -> text, "confirm" -> text).verifying("password and confirmation does not match", p => p._1 == p._2)
+    )(User.signup)(_.map(u => (u.username, ("", ""))))
+      .verifying("Invalid username", result => result.isDefined)
   }
-
-
-  /*
-  def loginForm = Action { implicit request =>
-    Ok(html.login(loginForm))
-  }
-
-  def signupForm = Action {
-    Ok(html.signup(signupForm))
-  }
-  */
-
 
   /**
    * Return the `gotoLoginSucceeded` method's result in the login action.
@@ -47,8 +48,8 @@ object Application extends Controller with LoginLogout with AuthConfigImpl{
    * you can add a procedure like the `gotoLogoutSucceeded`.
    */
   def authenticate = Action.async { implicit request =>
-    loginForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(html.login(formWithErrors))),
+    formForLogin.bindFromRequest.fold(
+      formWithErrors => Future.successful(BadRequest(html.intro(formWithErrors, formForSignup))),
       user => gotoLoginSucceeded(user.get.id.get)
     )
   }
@@ -65,13 +66,13 @@ object Application extends Controller with LoginLogout with AuthConfigImpl{
    */
   def logout = Action.async { implicit request =>
     // do something...
-    gotoLogoutSucceeded
+    gotoLogoutSucceeded.map(_.flashing("success" -> "Successfully logged out"))
   }
 
   def signup = Action.async { implicit request =>
-      signupForm.bindFromRequest.fold(
+      formForSignup.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(html.signup(formWithErrors))),
-        user => gotoLoginSucceeded(user.get.id.get)
+        user => Future.successful(Redirect(routes.Application.index()).flashing("success" -> "Successfully signed up"))
       )
   }
 

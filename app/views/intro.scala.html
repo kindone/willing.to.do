@@ -1,11 +1,11 @@
-@(signupForm:Form[Option[User.Frozen]])
+@(loginForm:Form[Option[User.Frozen]], signupForm:Form[Option[User.Frozen]])(implicit flash: Flash)
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sign Up :: Willing.to.do</title>
+    <title>Willing.to.do</title>
       <!-- bootstrap files -->
     <link rel="stylesheet"
     href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/superhero/bootstrap.min.css">
@@ -33,6 +33,9 @@
               <li>
                 <a href="">Help</a>
               </li>
+              <li>
+                <a href="@routes.Application.signupForm">Sign Up</a>
+              </li>
                 <!--<li>
 		        	<form role="search">
 					    <input type="text" class="form-control" placeholder="Filter">
@@ -40,33 +43,33 @@
 		        </li>-->
             </ul>
           </div>
-
+          <div class="col-md-8">
+            <ul class="nav navbar-nav navbar-right">
+              <li>@partials.login(loginForm)</li>
+            </ul>
+          </div>
         </nav>
       </div>
     </header>
 
     <div>
-      @if(signupForm.hasGlobalErrors) {
-        <ul>
-        @for(error <- signupForm.globalErrors) {
-          <li>@error.messages</li>
-        }
-        </ul>
+    @if(loginForm.hasGlobalErrors) {
+      <ul>
+      @for(error <- loginForm.globalErrors) {
+        <li>@error.messages</li>
       }
+      </ul>
+    }
 
-      @if(signupForm.hasErrors) {
-        <ul>
-        @for(error <- signupForm.errors) {
-          <li>@error.key : @error.messages</li>
-        }
-        </ul>
+    @if(loginForm.hasErrors) {
+      <ul>
+      @for(error <- loginForm.errors) {
+        <li>@error.key : @error.messages</li>
       }
+      </ul>
+    }
     </div>
 
-    <div id="top-container" class="container">
-      <div class="well">
-        @partials.signup(signupForm)
-      </div>
-    </div>
+
   </body>
 </html>

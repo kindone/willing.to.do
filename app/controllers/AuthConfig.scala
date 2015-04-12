@@ -42,6 +42,9 @@ trait AuthConfigImpl extends AuthConfig {
   def authenticationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] =
     Future.successful(Redirect(routes.Application.index))
 
+  def signupFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] =
+    Future.successful(Redirect(routes.Application.signupForm))
+
   /**
    * If authorization failed (usually incorrect password) redirect the user as follows:
    */
@@ -63,6 +66,8 @@ trait AuthConfigImpl extends AuthConfig {
       case _ => false
     }
   }
+
+
 
   /**
    * (Optional)

@@ -7,12 +7,20 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 // A todo can have multiple sub-todos
-class Todo(var name: String, var priority: Int, var willingness: Int,
-           var tags: Option[String], var labels: Option[String],
-           var ctx: Option[String], var category: Option[String],
-           var deadline: Option[Reminder], var reminder: Option[Reminder], var review: Option[Reminder],
+class Todo(var name: String,
+           var priority: Int,
+           var willingness: Int,
+           var tags: Option[String],
+           var labels: Option[String],
+           var ctx: Option[String],
+           var category: Option[String],
+           var deadline: Option[Reminder],
+           var reminder: Option[Reminder],
+           var review: Option[Reminder],
            var note: Option[Note],
-           var parent: Option[Todo], var owner:User) extends Entity {
+           var parent: Option[Todo],
+           var owner:User) extends Entity {
+
   def frozen() = transactional {
     Todo.Frozen(Some(id), name, priority, willingness,
       tags, labels, ctx, category,
@@ -32,13 +40,13 @@ object Todo extends ActiveRecord[Todo] {
                     ownerId: String) {
 
     def composite = transactional {
-      
+
       val (deadline, reminder, review) = Seq(deadlineId, reminderId, reviewId).map { r =>
         r.flatMap(Reminder.find(_)).map(_.frozen)
       } match {
         case List(a, b, c) => (a,b,c)
       }
-      
+
       val note = noteId.flatMap(Note.find(_)).map(_.frozen)
 
       Composite(id, name, priority, willingness, tags, labels, context, category,
@@ -101,8 +109,9 @@ object Todo extends ActiveRecord[Todo] {
     todo.labels = t.labels
     todo.ctx = t.context
     todo.category = t.category
+    // todo.ownerId : changing owner is prohibited
 
-    // create/update/delete according to the given 
+    // create/update/delete according to the given
 
     Seq((todo.deadline, t.deadline), (todo.reminder, t.reminder), (todo.review, t.review)).foreach { case (oldr, newr) =>
       oldr match {

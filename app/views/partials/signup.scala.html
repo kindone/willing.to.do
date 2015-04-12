@@ -1,0 +1,29 @@
+@(signupForm:Form[Option[User.Frozen]])
+
+
+<form method="POST" action="@routes.Application.signup()" class="form-horizontal">
+    <div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+        <div class="col-sm-6">
+            <input name="username" type="email" class="form-control" id="inputEmail3" placeholder="Email">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+        <div class="col-sm-6">
+            <input name="password.main" type="password" class="form-control" id="inputPassword3" placeholder="Password"">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPassword4" class="col-sm-2 control-label">Password Confirm</label>
+        <div class="col-sm-6">
+            <input name="password.confirm" type="password" class="form-control" id="inputPassword4" placeholder="Password Again"">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-6">
+            <button type="submit" class="btn btn-default">Sign Up</button>
+        </div>
+    </div>
+
+</form>
