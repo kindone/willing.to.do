@@ -16,20 +16,18 @@ class Note(var title: Option[String], var content: String) extends Entity {
 }
 
 object Note extends ActiveRecord[Note] {
-  
+
   val jsonFormat = Json.format[Frozen]
-  
+
   case class Frozen(id: Option[String], title: Option[String], content: String)
 
-  def create(frozen: Frozen) = transactional {
+  def create(frozen: Frozen): Note = transactional {
     new Note(frozen.title, frozen.content)
   }
-  
-  def update(frozen:Frozen) = transactional {
+
+  def update(frozen: Frozen): Unit = transactional {
     val note = find(frozen.id.get).get
     note.title = frozen.title
     note.content = frozen.content
-    
-    note
   }
 }

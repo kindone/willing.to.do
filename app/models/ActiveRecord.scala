@@ -14,65 +14,62 @@ import net.fwbrasil.activate.storage.relational.PooledJdbcRelationalStorage
 import net.fwbrasil.activate.storage.relational.idiom.{ h2Dialect, postgresqlDialect }
 import play.Logger
 
-
-
 object ActiveRecord extends ActivateContext {
-	lazy val config = ConfigFactory.load
-	lazy val host = config.getString("smtp.host")
-	lazy val mode = if (play.Play.isProd) "production" else if (play.Play.isDev) "development" else "test"
+  lazy val config = ConfigFactory.load
+  lazy val host = config.getString("smtp.host")
+  lazy val mode = if (play.Play.isProd) "production" else if (play.Play.isDev) "development" else "test"
 
+  if (play.Play.isTest)
+    Logger.info("Activating ActiveRecord in test mode")
 
-	if (play.Play.isTest)
-		Logger.info("Activating ActiveRecord in test mode")
+  val storage = new PooledJdbcRelationalStorage {
+    val jdbcDriver = config.getString(s"${mode}.db.driver")
+    val user = Some(config.getString(s"${mode}.db.user"))
+    val password = Some(config.getString(s"${mode}.db.password"))
+    val url = config.getString(s"${mode}.db.url")
+    val dialect = jdbcDriver match {
+      case "org.postgresql.Driver" => postgresqlDialect
+      case "org.h2.Driver"         => h2Dialect
+      case _                       => h2Dialect
+    }
+  }
 
-	val storage = new PooledJdbcRelationalStorage {
-		val jdbcDriver = config.getString(s"${mode}.db.driver")
-		val user = Some(config.getString(s"${mode}.db.user"))
-		val password = Some(config.getString(s"${mode}.db.password"))
-		val url = config.getString(s"${mode}.db.url")
-		val dialect = jdbcDriver match {
-			case "org.postgresql.Driver" => postgresqlDialect
-			case "org.h2.Driver" => h2Dialect
-			case _ => h2Dialect
-		}
-	}
-
-	lazy val sessionToken = transactional {
-		val tokens = all[SessionToken]
-		if (tokens.isEmpty)
-			new SessionToken(DigestUtils.sha1Hex(new Date().toString)).token
-		else tokens.map(_.token).head
-	}
+  lazy val sessionToken = transactional {
+    val tokens = all[SessionToken]
+    if (tokens.isEmpty)
+      new SessionToken(DigestUtils.sha1Hex(new Date().toString)).token
+    else tokens.map(_.token).head
+  }
 
 }
 
 class SessionToken(val token: String) extends Entity
 
 abstract class ActiveRecord[ModelType <: Entity: Manifest] {
-	import ActiveRecord._
-//
-//	type Frozen
-//
-//	def create(frozen:Frozen):ModelType
-//
-//	def update(frozen:Frozen):ModelType
+  import ActiveRecord._
+  //
+  //	type Frozen
+  //
+  //	def create(frozen:Frozen):ModelType
+  //
+  //	def update(frozen:Frozen):ModelType
 
-	def find(id: String): Option[ModelType] = transactional {
-		byId[ModelType](id)
-	}
+  def find(id: String): Option[ModelType] = transactional {
+    byId[ModelType](id)
+  }
 
-	def findAll() = transactional {
-		all[ModelType]
-	}
+  def findAll() = transactional {
+    all[ModelType]
+  }
 
-	def findAsMap(id:String) = find(id).map(_.toMap)
+  def findAsMap(id: String) = find(id).map(_.toMap)
 
-	def findAllAsMap() = findAll().map(_.toMap)
+  def findAllAsMap() = findAll().map(_.toMap)
 
-	def delete(id: String) {
-		transactional {
-			byId[ModelType](id).map(_.delete)
-		}
-	}
+  def delete(id: String) {
+    transactional {
+      byId[ModelType](id).map(_.delete)
+    }
+  }
 }
 

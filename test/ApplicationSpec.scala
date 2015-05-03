@@ -12,16 +12,16 @@ import play.api.test.Helpers._
  * For more information, consult the wiki.
  */
 @RunWith(classOf[JUnitRunner])
-class ApplicationSpec extends PlaySpec with OneAppPerSuite{
+class ApplicationSpec extends PlaySpec with OneAppPerSuite {
 
   "Application" should {
 
     "send 404 on a bad request" in {
-//      assertResult(None) {
-        new App {
-          route(FakeRequest(GET, "/boum"))
-        }
-//      }
+      //      assertResult(None) {
+      new App {
+        route(FakeRequest(GET, "/boum"))
+      }
+      //      }
     }
 
     "render the index page" in {
@@ -29,7 +29,7 @@ class ApplicationSpec extends PlaySpec with OneAppPerSuite{
         val home = route(FakeRequest(GET, "/")).get
 
         assert(status(home) === OK)
-        contentType(home) must be (Some("text/html"))
+        contentType(home) must be(Some("text/html"))
         contentAsString(home) must contain("Your new application is ready.")
       }
     }

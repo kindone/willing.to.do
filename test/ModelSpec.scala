@@ -12,7 +12,7 @@ import models.ActiveRecord._
  * Created by kindone on 15. 3. 29..
  */
 @RunWith(classOf[JUnitRunner])
-class ModelSpec extends PlaySpec with OneAppPerSuite with ActivateTest{
+class ModelSpec extends PlaySpec with OneAppPerSuite with ActivateTest {
 
   import models._
 
@@ -30,7 +30,7 @@ class ModelSpec extends PlaySpec with OneAppPerSuite with ActivateTest{
 
       testuser.username mustEqual "testuser"
 
-      a [net.fwbrasil.activate.entity.InvariantViolationException] must be thrownBy  {
+      a[net.fwbrasil.activate.entity.InvariantViolationException] must be thrownBy {
         User.signup("testuser", "0000", "0000")
       }
     }

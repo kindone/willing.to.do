@@ -1,18 +1,18 @@
 package utils
 
-import org.mindrot.jbcrypt.{BCrypt => jbcrypt}
+import org.mindrot.jbcrypt.{ BCrypt => jbcrypt }
 
 /**
  * Created by kindone on 15. 4. 11..
  */
 object BCrypt {
-  class BCryptString(str:String)
-  {
-    def bcrypt() = jbcrypt.hashpw(str, jbcrypt.gensalt())
 
-    def checkBcrypt(hashed:String) = jbcrypt.checkpw(str, hashed)
+  class BCryptString(str: String) {
+    def bcrypt(): String = jbcrypt.hashpw(str, jbcrypt.gensalt())
+
+    def checkBcrypt(hashed: String): Boolean = jbcrypt.checkpw(str, hashed)
   }
 
-  implicit def StringToBcryptString(str:String) = new BCryptString(str)
+  implicit def stringToBcryptString(str: String): BCryptString = new BCryptString(str)
 
 }

@@ -1,6 +1,30 @@
-@()
+@(tree:models.TodoTree)
 <!-- Display todo-->
 
+<!-- Recursive definition of Hierarchy -->
+@hierarchy(todoNode:models.TodoNode) = {
+    <li class="hierarchy-item">@partials.hierarchyitem(todoNode.todo.name, !todoNode.children.isEmpty)
+        @if(!todoNode.children.isEmpty) {
+            <ul class="hierarchy">
+            @todoNode.children.foreach { child =>
+                @hierarchy(child)
+            }
+            </ul>
+        }
+    </li>
+}
+
+@if(!tree.children.isEmpty) {
+    <div class="hierarchy">
+        <ul class="hierarchy">
+            @tree.children.foreach { child =>
+                @hierarchy(child)
+            }
+        </ul>
+    </div>
+}
+
+<!--
 <div class="hierarchy">
     <ul class="hierarchy">
         <li class="hierarchy-item">@partials.hierarchyitem("Design and UX issues")</li>
@@ -18,6 +42,4 @@
         <li class="hierarchy-item">@partials.hierarchyitem("Client-side implementation")</li>
     </ul>
 </div>
-<div>
-    <p class="text-primary"><a>+ Add Task</a></p>
-</div>
+-->

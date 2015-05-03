@@ -1,9 +1,8 @@
-import org.scalatestplus.play.{HtmlUnitFactory, OneServerPerSuite, OneBrowserPerSuite, PlaySpec}
+import org.scalatestplus.play.{ HtmlUnitFactory, OneServerPerSuite, OneBrowserPerSuite, PlaySpec }
 import org.junit.runner._
 import org.scalatest.junit.JUnitRunner
 import play.api.test._
 import play.api.test.Helpers._
-
 
 /**
  * add your integration spec here.
@@ -40,7 +39,7 @@ class IntegrationSpec extends PlaySpec with OneServerPerSuite with OneBrowserPer
       browser.pageSource must not contain ("Sign in")
       browser.pageSource must contain("logout")
       browser.getCookie("PLAY2AUTH_SESS_ID").getExpiry must not be null
-        // logout
+      // logout
       browser.$("a").click()
       browser.pageSource must contain("Sign in")
       browser.goTo(s"$baseURL/standard/messages/write")
@@ -54,7 +53,7 @@ class IntegrationSpec extends PlaySpec with OneServerPerSuite with OneBrowserPer
       browser.$("#password").text("secret")
       browser.$("#loginbutton").click()
       browser.$("dl.error").size mustEqual 0
-      browser.pageSource must not contain("Sign in")
+      browser.pageSource must not contain ("Sign in")
       browser.pageSource must contain("logout")
       browser.goTo(s"${baseURL}/standard/messages/write")
       browser.pageSource must contain("no permission")
@@ -64,7 +63,7 @@ class IntegrationSpec extends PlaySpec with OneServerPerSuite with OneBrowserPer
       browser.$("#loginbutton").click()
       browser.$("dl.error").size mustEqual 0
       browser.goTo(s"${baseURL}/standard/messages/write")
-      browser.pageSource must not contain("no permission")
+      browser.pageSource must not contain ("no permission")
     }
   }
 }

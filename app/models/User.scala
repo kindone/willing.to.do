@@ -1,6 +1,7 @@
 package models
 
 import ActiveRecord._
+import models.Todo._
 import net.fwbrasil.activate.entity.InvariantViolationException
 import org.mindrot.jbcrypt.BCrypt
 
@@ -9,6 +10,7 @@ import org.mindrot.jbcrypt.BCrypt
  */
 
 sealed trait Role
+
 case object Administrator extends Role {
   override def toString() = "administrator"
 }
@@ -18,85 +20,118 @@ case object NormalUser extends Role {
 }
 
 class User(var username: String,
-           var hashedpassword:String,
-           val role:String) extends Entity {
+    var hashedpassword: String,
+    val role: String) extends Entity {
 
-  def frozen() = transactional {
+  def frozen(): User.Frozen = transactional {
     val role_ = role match {
       case "administrator" => Administrator
-      case "normal_user" => NormalUser
+      case "normal_user"   => NormalUser
     }
     User.Frozen(Some(id), username, hashedpassword, role_)
   }
 
   def invariantUsernameMustBeUnique =
-
     invariant {
-
       query {
-
         user: User =>
-
           where((user.username :== username) :&&
-
             (user.id :!= this.id)) select (1)
-
       }.isEmpty
-
     }
 }
 
 object User extends ActiveRecord[User] {
+
   case class Frozen(id: Option[String],
-                    username: String,
-                    hashedpassword:String, role:Role)
+    username: String,
+    hashedpassword: String, role: Role)
 
-  def todos(id: String) = Todo.findAll()
-  def createTodo(id: String, todo:Todo.Composite) = Todo.create(todo)
-  def updateTodo(id: String, todo:Todo.Composite) = Todo.update(todo)
-  def deleteTodo(id: String, todoId:String) = Todo.delete(todoId)
+  import utils.BCrypt._
 
-  import utils.BCrypt._ // implicit conversion
+  def allTodos(id: String): List[Todo] = transactional {
+    select[Todo] where (todo => (todo.owner.id :== id))
+  }
+
+  def activeTodos(id: String): List[Todo] = transactional {
+    select[Todo] where (todo => (todo.owner.id :== id) :&& (todo.status :== Todo.ACTIVE))
+  }
+
+  def activeRootTodos(id: String): List[Todo] = transactional {
+    select[Todo] where (todo => (todo.owner.id :== id) :&& (todo.parent.isNull))
+  }
+
+  def activeTodoTree(id: String): TodoTree = transactional {
+
+    def subTree(todos: List[Todo]): List[TodoNode] = transactional {
+      todos.map(_.frozen).map { todo =>
+        val sub = activeSubTodos(id, todo.id.get)
+        TodoNode(todo, subTree(sub))
+      }
+    }
+
+    val rootTodos = activeRootTodos(id)
+    val nodes = subTree(rootTodos)
+
+    TodoTree(nodes)
+  }
+
+  def activeSubTodos(id: String, todoId: String) = transactional {
+    val todo = Todo.find(todoId).get
+    select[Todo] where (todo => (todo.owner.id :== id) :&& (todo.parent :== todo))
+  }
+
+  def createTodo(id: String, todo: Todo.Composite): Option[Todo] = {
+    if (todo.ownerId == id)
+      Some(Todo.create(todo))
+    else
+      None
+  }
+
+  def updateTodo(id: String, composite: Todo.Composite): Todo = {
+    val todo = select[Todo] where (t => (t.owner.id :== id) :&& (t.id :== composite.id))
+    Todo.update(todo.head)(composite)
+  }
+
+  def deleteTodo(id: String, todoId: String): Unit = {
+    val todo = select[Todo] where (t => (t.owner.id :== id) :&& (t.id :== todoId))
+    todo.foreach(_.delete)
+  }
 
   override def delete(id: String) {
     transactional {
       val user = byId[User](id).get
-
+      // TODO: remove all todos owned by user
       super.delete(id)
     }
   }
 
-  def authenticate(username:String, password:String):Option[User.Frozen] = transactional {
+  def authenticate(username: String, password: String): Option[User.Frozen] = transactional {
     select[User].where(_.username :== username)
       .filter(user => password.checkBcrypt(user.hashedpassword))
       .headOption.map(_.frozen)
   }
 
-  def signup(username:String, password:(String, String)):Option[User.Frozen] = transactional {
-    if(password._1 == password._2) {
+  def signup(username: String, password: (String, String)): Option[User.Frozen] = transactional {
+    if (password._1 == password._2) {
       try {
         Some(new User(username, password._1.bcrypt, NormalUser.toString()).frozen)
-      }
-      catch {
-        case e:InvariantViolationException =>
+      } catch {
+        case e: InvariantViolationException =>
           None
       }
-    }
-    else
+    } else
       None
   }
 
-  def update(id:String)
-            (oldpassword:String, password:(String,String)):Option[User.Frozen] = transactional {
-    if(password._1 == password._2) {
+  def update(id: String)(oldpassword: String, password: (String, String)): Option[User.Frozen] = transactional {
+    if (password._1 == password._2) {
       User.find(id).filter(user => oldpassword.checkBcrypt(user.hashedpassword)).headOption.map { user =>
         user.hashedpassword = password._1.bcrypt
         user.frozen()
       }
-    }
-    else
+    } else
       None
   }
 }
-
 

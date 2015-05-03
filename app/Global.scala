@@ -9,7 +9,7 @@ import net.fwbrasil.activate.migration.Migration
 object Global extends GlobalSettings {
 
   override def onStart(app: Application) {
-    
+
     Migration.execute(models.ActiveRecord, new models.DevMigration)
     //Migration.update(models.ActiveRecord)
     transactional { /* force loading activate context */ }

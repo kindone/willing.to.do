@@ -1,5 +1,23 @@
-@()
+@(projects:List[(Todo.Frozen, List[Todo.Frozen])])
 <ul class="list-group">
+
+    @if(!projects.isEmpty) {
+        @for(project <- projects) {
+            <li class="list-group-item">@project._1.name
+                @if(!project._2.isEmpty) {
+                    <ul>
+                    @for(subproject <- project._2) {
+                        <li>@subproject.name</li>
+                    }
+                    </ul>
+                }
+            </li>
+        }
+    } else {
+        <p>You have no project or todo yet</p>
+    }
+
+        <!--
     <li class="list-group-item">Health</li>
     <li class="list-group-item">Administrative</li>
     <li class="list-group-item"><span class="caret"></span> Code
@@ -8,4 +26,5 @@
             <li>Infinite Wall</li>
         </ul>
     </li>
+    -->
 </ul>

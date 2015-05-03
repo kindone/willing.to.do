@@ -11,10 +11,10 @@ GET         /logout                controllers.Application.logout
 GET         /signupform            controllers.Application.signupForm
 POST        /signup                controllers.Application.signup
 
-GET         /quit                  controllers.Application.quit
-
 GET         /profile               controllers.AccountController.index
-POST         /profile/update       controllers.AccountController.update
+POST        /profile/update        controllers.AccountController.update
+
+GET         /quit                  controllers.AccountController.quit
 
 # API definition
 ->          /api/sample            controllers.SampleAPIRouter
@@ -24,6 +24,8 @@ POST         /profile/update       controllers.AccountController.update
 # API info
 GET         /api-info/todo         controllers.TodoRouter.apiInfo
 
-
+# webjars
+GET     /webjars/*file                    controllers.WebJarAssets.at(file)
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file          controllers.Assets.at(path="/public", file)
+

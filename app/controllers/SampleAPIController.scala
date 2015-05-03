@@ -6,18 +6,15 @@ import twentysix.playr.simple._
 import play.api.libs.json.Json
 import play.api.Logger
 
- 
-case class SampleModel(id:Int, name:String, address:Option[String])
-
+case class SampleModel(id: Int, name: String, address: Option[String])
 
 object SampleAPIController extends RestReadController[SampleModel]
-               with ResourceCreate with ResourceWrite
-{
+    with ResourceCreate with ResourceWrite {
 
   def name = "todo"
-  
-  val items = List(SampleModel(1,"Aaron", None), SampleModel(2, "Banks", None), SampleModel(3, "Curkes", None))
-  
+
+  val items = List(SampleModel(1, "Aaron", None), SampleModel(2, "Banks", None), SampleModel(3, "Curkes", None))
+
   implicit val todoFormat = Json.format[SampleModel]
 
   def fromId(sid: String): Option[SampleModel] = items.find { item => item.id.toString == sid }
@@ -42,6 +39,5 @@ object SampleAPIController extends RestReadController[SampleModel]
     Ok(Json.toJson(newItem))
   }
 }
-
 
 object SampleAPIRouter extends RestResourceRouter(SampleAPIController) with ApiInfo

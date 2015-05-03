@@ -1,8 +1,9 @@
 package controllers
 
+import controllers.TodoController._
 import play.api._
 import play.api.mvc._
-import jp.t2v.lab.play2.auth.{OptionalAuthElement, LoginLogout}
+import jp.t2v.lab.play2.auth.{ OptionalAuthElement, LoginLogout }
 import play.api.data._
 import play.api.data.Forms._
 import models.User
@@ -11,12 +12,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
-object Application extends Controller with LoginLogout with OptionalAuthElement with AuthConfigImpl{
+object Application extends Controller with LoginLogout with OptionalAuthElement with AuthConfigImpl {
 
   def index = StackAction { implicit request =>
     loggedIn match {
-      case Some(user) => Ok(views.html.index("Your new application is ready."))
-      case None => Ok(views.html.intro(formForLogin, formForSignup))
+      case Some(user) =>
+        val ts = models.User.activeRootTodos(loggedIn.get.id.get).map(_.frozen)
+        val ps = ts.map { t =>
+          (t, List[models.Todo.Frozen]())
+        }
+
+        val tree = models.User.activeTodoTree(loggedIn.get.id.get)
+
+        Ok(views.html.index("Your new application is ready.", ps, tree))
+      case None =>
+        Ok(views.html.intro(formForLogin, formForSignup))
     }
   }
 
@@ -24,10 +34,10 @@ object Application extends Controller with LoginLogout with OptionalAuthElement 
   def signupForm = StackAction { implicit request =>
     loggedIn match {
       case Some(_) => Redirect(routes.Application.index())
-      case None => Ok(views.html.signup(formForSignup))
+      case None    => Ok(views.html.signup(formForSignup))
     }
   }
-  
+
   /** Your application's login form.  Alter it to fit your application */
   val formForLogin = Form {
     mapping("username" -> email, "password" -> text)(User.authenticate)(_.map(u => (u.username, "")))
@@ -70,12 +80,10 @@ object Application extends Controller with LoginLogout with OptionalAuthElement 
   }
 
   def signup = Action.async { implicit request =>
-      formForSignup.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(html.signup(formWithErrors))),
-        user => Future.successful(Redirect(routes.Application.index()).flashing("success" -> "Successfully signed up"))
-      )
+    formForSignup.bindFromRequest.fold(
+      formWithErrors => Future.successful(BadRequest(html.signup(formWithErrors))),
+      user => Future.successful(Redirect(routes.Application.index()).flashing("success" -> "Successfully signed up"))
+    )
   }
-
-  def quit = TODO
 
 }
