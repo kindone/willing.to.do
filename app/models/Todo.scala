@@ -8,7 +8,7 @@ import play.api.libs.functional.syntax._
 
 case class TodoTree(children: List[TodoNode])
 
-case class TodoNode(todo: Todo.Frozen, children: List[TodoNode])
+case class TodoNode(todo: Option[Todo.Frozen], children: List[TodoNode])
 
 // A todo can have multiple sub-todos
 class Todo(var name: String,

@@ -1,13 +1,21 @@
-@(projects:List[(Todo.Frozen, List[Todo.Frozen])])
+@(todoTree:TodoTree)
+
+@projectName(todoNode:TodoNode) = @{
+    todoNode.todo match {
+        case Some(todo) => todo.name
+        case None => "Uncategorized"
+    }
+}
+
 <ul class="list-group">
 
-    @if(!projects.isEmpty) {
-        @for(project <- projects) {
-            <li class="list-group-item">@project._1.name
-                @if(!project._2.isEmpty) {
+    @if(!todoTree.children.isEmpty) {
+        @for(project <- todoTree.children) {
+            <li class="list-group-item">@projectName(project)
+                @if(!project.children.isEmpty) {
                     <ul>
-                    @for(subproject <- project._2) {
-                        <li>@subproject.name</li>
+                    @for(subproject <- project.children) {
+                        <li>@projectName(subproject)</li>
                     }
                     </ul>
                 }

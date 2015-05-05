@@ -1,9 +1,17 @@
 @(tree:models.TodoTree)
 <!-- Display todo-->
 
+@projectName(todoNode:TodoNode) = @{
+    todoNode.todo match {
+        case Some(todo) => todo.name
+        case None => "Uncategorized"
+    }
+}
+
 <!-- Recursive definition of Hierarchy -->
 @hierarchy(todoNode:models.TodoNode) = {
-    <li class="hierarchy-item">@partials.hierarchyitem(todoNode.todo.name, !todoNode.children.isEmpty)
+
+    <li class="hierarchy-item">@partials.hierarchyitem(projectName(todoNode), !todoNode.children.isEmpty)
         @if(!todoNode.children.isEmpty) {
             <ul class="hierarchy">
             @todoNode.children.foreach { child =>

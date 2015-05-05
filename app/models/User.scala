@@ -58,22 +58,25 @@ object User extends ActiveRecord[User] {
   }
 
   def activeRootTodos(id: String): List[Todo] = transactional {
-    select[Todo] where (todo => (todo.owner.id :== id) :&& (todo.parent.isNull))
+    select[Todo] where (todo => (todo.owner.id :== id) :&& (todo.parent.isNull) :&& (todo.status :== Todo.ACTIVE))
   }
 
   def activeTodoTree(id: String): TodoTree = transactional {
 
-    def subTree(todos: List[Todo]): List[TodoNode] = transactional {
+    def subTree(todos: List[Todo], level: Int = 0): List[TodoNode] = transactional {
       todos.map(_.frozen).map { todo =>
         val sub = activeSubTodos(id, todo.id.get)
-        TodoNode(todo, subTree(sub))
+        TodoNode(Some(todo), subTree(sub, level + 1))
       }
     }
 
     val rootTodos = activeRootTodos(id)
-    val nodes = subTree(rootTodos)
+    val nodes: List[TodoNode] = subTree(rootTodos)
 
-    TodoTree(nodes)
+    val uncategorized: TodoNode = TodoNode(None, nodes.filter(_.children.isEmpty))
+    val projects: List[TodoNode] = nodes.filterNot(_.children.isEmpty)
+
+    TodoTree(uncategorized +: projects)
   }
 
   def activeSubTodos(id: String, todoId: String) = transactional {

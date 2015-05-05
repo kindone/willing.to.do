@@ -17,14 +17,8 @@ object Application extends Controller with LoginLogout with OptionalAuthElement 
   def index = StackAction { implicit request =>
     loggedIn match {
       case Some(user) =>
-        val ts = models.User.activeRootTodos(loggedIn.get.id.get).map(_.frozen)
-        val ps = ts.map { t =>
-          (t, List[models.Todo.Frozen]())
-        }
-
         val tree = models.User.activeTodoTree(loggedIn.get.id.get)
-
-        Ok(views.html.index("Your new application is ready.", ps, tree))
+        Ok(views.html.index("Your new application is ready.", tree))
       case None =>
         Ok(views.html.intro(formForLogin, formForSignup))
     }

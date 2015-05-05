@@ -1,4 +1,4 @@
-@(message: String, projects: List[(Todo.Frozen, List[Todo.Frozen])], todoTree: models.TodoTree)
+@(message: String, todoTree: models.TodoTree)
 <!DOCTYPE html>
 <html>
     <head>
@@ -90,7 +90,7 @@
                                 <!-- Tab panes -->
                             <div class="tab-content">
                                 <div role="tabpanel" class="tab-pane active" id="projects">
-                                @partials.projectview(projects)
+                                @partials.projectview(todoTree)
                                 </div>
                                 <div role="tabpanel" class="tab-pane" id="labels">
                                 @partials.labelview()
