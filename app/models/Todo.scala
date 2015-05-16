@@ -24,6 +24,7 @@ class Todo(var name: String,
     var note: Option[Note],
     var parent: Option[Todo],
     var owner: User,
+    var position: Int,
     val status: Int) extends Entity {
 
   def frozen() = transactional {
@@ -41,6 +42,7 @@ class Todo(var name: String,
       note.map(_.id),
       parent.map(_.id),
       owner.id,
+      position,
       status)
   }
 }
@@ -65,7 +67,9 @@ object Todo extends ActiveRecord[Todo] {
       reviewId: Option[String],
       noteId: Option[String],
       parentId: Option[String],
-      ownerId: String, status: Int) {
+      ownerId: String,
+      position: Int,
+      status: Int) {
 
     def composite = transactional {
 
@@ -92,6 +96,7 @@ object Todo extends ActiveRecord[Todo] {
         note,
         parentId,
         ownerId,
+        position,
         status)
     }
   }
@@ -110,6 +115,7 @@ object Todo extends ActiveRecord[Todo] {
     note: Option[Note.Frozen],
     parentId: Option[String],
     ownerId: String,
+    position: Int,
     status: Int)
 
   implicit val noteFormat = Note.jsonFormat
@@ -133,6 +139,7 @@ object Todo extends ActiveRecord[Todo] {
         note,
         parentId,
         ownerId,
+        _,
         status) =>
 
         val mDeadline = deadline.map(Reminder.create(_))
@@ -149,8 +156,10 @@ object Todo extends ActiveRecord[Todo] {
 
         val owner = User.find(ownerId).get
 
+        val position = 0
+
         new Todo(name, priority, willingness, tags, labels, context, category,
-          mDeadline, mReminder, mReview, mNote, parent, owner, status)
+          mDeadline, mReminder, mReview, mNote, parent, owner, position, status)
     }
   }
 

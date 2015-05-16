@@ -17,7 +17,7 @@ import scala.concurrent.Future
  */
 object AccountController extends Controller with AuthElement with AuthConfigImpl {
 
-  def formForProfile(implicit request: RequestWithAttributes[_]) = Form {
+  private def formForProfile(implicit request: RequestWithAttributes[_]) = Form {
     mapping("oldpassword" -> text,
       "password" -> tuple("main" -> text, "passwordconfirm" -> text)
         .verifying("password confirmation does not match", p => p._1 == p._2)

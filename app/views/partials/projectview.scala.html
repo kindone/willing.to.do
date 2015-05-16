@@ -3,7 +3,7 @@
 @projectName(todoNode:TodoNode) = @{
     todoNode.todo match {
         case Some(todo) => todo.name
-        case None => "Uncategorized"
+        case None => "Inbox"
     }
 }
 
@@ -22,7 +22,7 @@
             </li>
         }
     } else {
-        <p>You have no project or todo yet</p>
+        <p>You have no project or task yet</p>
     }
 
         <!--

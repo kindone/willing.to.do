@@ -12,7 +12,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
-object Application extends Controller with LoginLogout with OptionalAuthElement with AuthConfigImpl {
+object Application extends Controller
+    with LoginLogout with OptionalAuthElement with AuthConfigImpl {
 
   def index = StackAction { implicit request =>
     loggedIn match {
@@ -25,7 +26,7 @@ object Application extends Controller with LoginLogout with OptionalAuthElement 
   }
 
   // better remove and move to ajax-style one (included in index)
-  def signupForm = StackAction { implicit request =>
+  private def signupForm = StackAction { implicit request =>
     loggedIn match {
       case Some(_) => Redirect(routes.Application.index())
       case None    => Ok(views.html.signup(formForSignup))
@@ -34,13 +35,17 @@ object Application extends Controller with LoginLogout with OptionalAuthElement 
 
   /** Your application's login form.  Alter it to fit your application */
   val formForLogin = Form {
-    mapping("username" -> email, "password" -> text)(User.authenticate)(_.map(u => (u.username, "")))
+    mapping("username" -> email, "password" -> text)(User.authenticate)(
+      _.map(u => (u.username, "")))
       .verifying("Invalid username or password", result => result.isDefined)
   }
 
   val formForSignup = Form {
     mapping("username" -> email,
-      "password" -> tuple("main" -> text, "confirm" -> text).verifying("password and confirmation does not match", p => p._1 == p._2)
+      "password" -> tuple("main" -> text, "confirm" -> text)
+        .verifying("password and confirmation does not match",
+          p => p._1 == p._2
+        )
     )(User.signup)(_.map(u => (u.username, ("", ""))))
       .verifying("Invalid username", result => result.isDefined)
   }
@@ -53,8 +58,12 @@ object Application extends Controller with LoginLogout with OptionalAuthElement 
    */
   def authenticate = Action.async { implicit request =>
     formForLogin.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(html.intro(formWithErrors, formForSignup))),
-      user => gotoLoginSucceeded(user.get.id.get)
+      formWithErrors =>
+        Future.successful(
+          BadRequest(html.intro(formWithErrors, formForSignup))
+        ),
+      user =>
+        gotoLoginSucceeded(user.get.id.get)
     )
   }
 
@@ -75,8 +84,11 @@ object Application extends Controller with LoginLogout with OptionalAuthElement 
 
   def signup = Action.async { implicit request =>
     formForSignup.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(html.signup(formWithErrors))),
-      user => Future.successful(Redirect(routes.Application.index()).flashing("success" -> "Successfully signed up"))
+      formWithErrors =>
+        Future.successful(BadRequest(html.signup(formWithErrors))),
+      user =>
+        Future.successful(Redirect(routes.Application.index())
+          .flashing("success" -> "Successfully signed up"))
     )
   }
 
