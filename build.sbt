@@ -27,6 +27,7 @@ libraryDependencies ++= Seq(
 	"org.seleniumhq.selenium" % "selenium-java" % "2.31.0",
 	"org.webjars" % "momentjs" % "2.9.0",
 	"org.webjars" % "Eonasdan-bootstrap-datetimepicker" % "4.7.14",
+	"org.webjars" % "angularjs" % "1.3.15",
 	"org.scalacheck" %% "scalacheck" % "1.12.2" % "test",
 	"org.scalatestplus" %% "play" % "1.1.0" % "test"
 )

@@ -47,7 +47,7 @@ object Application extends Controller
           p => p._1 == p._2
         )
     )(User.signup)(_.map(u => (u.username, ("", ""))))
-      .verifying("Invalid username", result => result.isDefined)
+      .verifying("User does not exist", result => result.isDefined)
   }
 
   /**
