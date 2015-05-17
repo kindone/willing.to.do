@@ -7,7 +7,6 @@ import models.{ NormalUser, User }
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
-import play.api.mvc.Controller
 import views.html
 
 import scala.concurrent.Future

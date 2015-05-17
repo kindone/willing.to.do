@@ -19,14 +19,14 @@ object Application extends Controller
     loggedIn match {
       case Some(user) =>
         val tree = models.User.activeTodoTree(loggedIn.get.id.get)
-        Ok(views.html.index("Your new application is ready.", tree))
+        Ok(views.html.index(tree))
       case None =>
         Ok(views.html.intro(formForLogin, formForSignup))
     }
   }
 
   // better remove and move to ajax-style one (included in index)
-  private def signupForm = StackAction { implicit request =>
+  def signupForm = StackAction { implicit request =>
     loggedIn match {
       case Some(_) => Redirect(routes.Application.index())
       case None    => Ok(views.html.signup(formForSignup))

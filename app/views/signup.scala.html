@@ -1,72 +1,52 @@
 @(signupForm:Form[Option[User.Frozen]])
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sign Up :: Willing.to.do</title>
-      <!-- bootstrap files -->
-    <link rel="stylesheet"
-    href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/superhero/bootstrap.min.css">
+@layouts.basic("Sign Up") {
+  <header class="navbar navbar-default navbar-static-top bs-docs-nav" id="top" role="banner">
+    <div class="container-fluid">
+      <nav class="collapse navbar-collapse bs-navbar-collapse row">
+        <div class="col-md-4 left-sidebar">
+          <ul class="nav navbar-nav">
+            <li>
+              <a href="">W.T.D</a>
+            </li>
+            <li>
+              <a href="">About</a>
+            </li>
+            <li>
+              <a href="">Help</a>
+            </li>
+              <!--<li>
+                  <form role="search">
+                      <input type="text" class="form-control" placeholder="Filter">
+                  </form>
+              </li>-->
+          </ul>
+        </div>
 
-    <link rel="stylesheet"
-    href="/assets/stylesheets/global.css">
-    <script
-    src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script
-    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-  </head>
-  <body>
-
-    <header class="navbar navbar-default navbar-static-top bs-docs-nav" id="top" role="banner">
-      <div class="container-fluid">
-        <nav class="collapse navbar-collapse bs-navbar-collapse row">
-          <div class="col-md-4 left-sidebar">
-            <ul class="nav navbar-nav">
-              <li>
-                <a href="">W.T.D</a>
-              </li>
-              <li>
-                <a href="">About</a>
-              </li>
-              <li>
-                <a href="">Help</a>
-              </li>
-                <!--<li>
-		        	<form role="search">
-					    <input type="text" class="form-control" placeholder="Filter">
-					</form>
-		        </li>-->
-            </ul>
-          </div>
-
-        </nav>
-      </div>
-    </header>
-
-    <div>
-      @if(signupForm.hasGlobalErrors) {
-        <ul>
-        @for(error <- signupForm.globalErrors) {
-          <li>@error.messages</li>
-        }
-        </ul>
-      }
-
-      @if(signupForm.hasErrors) {
-        <ul>
-        @for(error <- signupForm.errors) {
-          <li>@error.key : @error.messages</li>
-        }
-        </ul>
-      }
+      </nav>
     </div>
+  </header>
 
-    <div id="top-container" class="container">
-      <div class="well">
-        @partials.signup(signupForm)
-      </div>
+  <div>
+    @if(signupForm.hasGlobalErrors) {
+      <ul>
+      @for(error <- signupForm.globalErrors) {
+        <li>@error.messages</li>
+      }
+      </ul>
+    }
+
+    @if(signupForm.hasErrors) {
+      <ul>
+      @for(error <- signupForm.errors) {
+        <li>@error.key : @error.messages</li>
+      }
+      </ul>
+    }
+  </div>
+
+  <div id="top-container" class="container">
+    <div class="well">
+      @partials.signup(signupForm)
     </div>
-  </body>
-</html>
+  </div>
+}
