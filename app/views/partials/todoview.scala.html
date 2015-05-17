@@ -1,53 +1,59 @@
-@(tree:models.TodoTree)
+@()
 <!-- Display todo-->
+<div ng-controller="TaskCtrl">
 
-@projectName(todoNode:TodoNode) = @{
-    todoNode.todo match {
-        case Some(todo) => todo.name
-        case None => "Uncategorized"
-    }
-}
+    <script type="text/ng-template" id="hierarchy-item.html">
+        <a class="hierarchy-move-handle">
+            <span class="glyphicon glyphicon-align-justify invisible"></span>
+        </a>
+        <span class="glyphicon glyphicon-triangle-bottom" ng-if="task.children.length > 0" onclick="$(this).toggleClass('glyphicon-triangle-bottom glyphicon-triangle-right');"></span>
+        <span class="glyphicon glyphicon-triangle-bottom invisible" ng-if="task.children===undefined || task.children.length == 0" onclick="$(this).toggleClass('glyphicon-triangle-bottom glyphicon-triangle-right');"></span>
 
-<!-- Recursive definition of Hierarchy -->
-@hierarchy(todoNode:models.TodoNode) = {
 
-    <li class="hierarchy-item">@partials.hierarchyitem(projectName(todoNode), !todoNode.children.isEmpty)
-        @if(!todoNode.children.isEmpty) {
-            <ul class="hierarchy">
-            @todoNode.children.foreach { child =>
-                @hierarchy(child)
-            }
-            </ul>
-        }
-    </li>
-}
+        <span class="hierarchy-item-row-body">
+            <span class="hierarchy-item-row-text">{{task.name}}</span>
+            <a>
+                <span class="glyphicon glyphicon-blackboard invisible"></span>
+            </a>
+            <a>
+                <span class="glyphicon glyphicon-option-horizontal invisible pull-right"></span>
+            </a>
+        </span>
+    </script>
 
-@if(!tree.children.isEmpty) {
-    <div class="hierarchy">
+    <script type="text/ng-template" id="hierarchy.html">
+        <p ng-include="'hierarchy-item.html'" class="hierarchy-item-row"></p>
+        <ul ng-if="task.children.length > 0" class="hierarchy">
+            <li ng-repeat="task in task.children" class="hierarchy-item" ng-include="'hierarchy.html'"></li>
+        </ul>
+    </script>
+
+    <div ng-if="tasks.length > 0" class="hierarchy">
         <ul class="hierarchy">
-            @tree.children.foreach { child =>
-                @hierarchy(child)
-            }
+            <li ng-repeat="task in tasks" ng-include="'hierarchy.html'"></li>
         </ul>
     </div>
-}
+    <div ng-if="tasks.length == 0">
+        You have no tasks to display
+    </div>
 
-<!--
-<div class="hierarchy">
-    <ul class="hierarchy">
-        <li class="hierarchy-item">@partials.hierarchyitem("Design and UX issues")</li>
-        <li class="hierarchy-item">@partials.hierarchyitem("Server-side implementation", true)
-            <ul class="hierarchy">
-                <li class="hierarchy-item">@partials.hierarchyitem("authentication")</li>
-                <li class="hierarchy-item">@partials.hierarchyitem("Authorization", true)
-                    <ul class="hierarchy">
-                        <li class="hierarchy-item">@partials.hierarchyitem("API should block unauhorized")</li>
-                        <li class="hierarchy-item">@partials.hierarchyitem("main page should provide unauhorized access")</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-        <li class="hierarchy-item">@partials.hierarchyitem("Client-side implementation")</li>
-    </ul>
+    <!--
+    <div class="hierarchy">
+        <ul class="hierarchy">
+            <li class="hierarchy-item">@partials.hierarchyitem("Design and UX issues")</li>
+            <li class="hierarchy-item">@partials.hierarchyitem("Server-side implementation", true)
+                <ul class="hierarchy">
+                    <li class="hierarchy-item">@partials.hierarchyitem("authentication")</li>
+                    <li class="hierarchy-item">@partials.hierarchyitem("Authorization", true)
+                        <ul class="hierarchy">
+                            <li class="hierarchy-item">@partials.hierarchyitem("API should block unauhorized")</li>
+                            <li class="hierarchy-item">@partials.hierarchyitem("main page should provide unauhorized access")</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li class="hierarchy-item">@partials.hierarchyitem("Client-side implementation")</li>
+        </ul>
+    </div>
+    -->
 </div>
--->

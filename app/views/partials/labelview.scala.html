@@ -1,7 +1,7 @@
 @()
-
-<ul>
-    <li>difficult</li>
-    <li>relaxing</li>
-    <li>office</li>
-</ul>
+<div ng-controller="LabelCtrl">
+    <ul ng-if="labels.length > 0">
+        <li ng-repeat="label in labels">{{label.name}}</li>
+    </ul>
+    <p ng-if="labels.length == 0">There is no label to display</p>
+</div>

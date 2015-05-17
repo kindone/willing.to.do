@@ -1,14 +1,6 @@
 @(todoTree: models.TodoTree)
 
 @layouts.main("willing.to.do") {
-    <script type="text/javascript">
-        var app = angular.module("App")
-        app.controller("", function($scope) {
-            $scope.tasks = []
-        })
-    </script>
-
-
     <header class="navbar navbar-default navbar-static-top bs-docs-nav" id="top" role="banner">
         <div class="container-fluid">
             <nav class="collapse navbar-collapse bs-navbar-collapse row">
@@ -79,7 +71,7 @@
                             <!-- Tab panes -->
                         <div class="tab-content">
                             <div role="tabpanel" class="tab-pane active" id="projects">
-                                @partials.projectview(todoTree)
+                                @partials.projectview()
                             </div>
                             <div role="tabpanel" class="tab-pane" id="labels">
                                 @partials.labelview()
@@ -111,7 +103,7 @@
                 <div id="content">
                         <!-- header for each category (if exists) -->
                         <!-- list up (hiearchical structure) of todos -->
-                    @partials.todoview(todoTree)
+                    @partials.todoview()
 
                     <div>
                             <!--<p class="text-primary"><a href="javascript:alert('TODO')">+ Add Task</a></p>-->
@@ -124,4 +116,42 @@
         </div>
         @partials.todoform()
     </div>
+
+    <script type="text/javascript">
+        var app = angular.module("App", [])
+        app.controller("ProjectListCtrl", function($scope) {
+            $scope.projects = [
+                {name: "a sample project"},
+                {name: "second project",
+                 children: []
+                },
+                {name: "project with subprojects",
+                 children: [
+                    {name:"a subproject"}
+                 ]
+                }
+            ]
+
+            $scope.tasks = []
+
+        })
+
+        app.controller("LabelCtrl", function($scope) {
+            $scope.labels = []
+        })
+
+        app.controller("TaskCtrl", function($scope) {
+            $scope.tasks = [
+                {name: "a sample task"},
+                {name: "second task",
+                 children: []
+                },
+                {name: "project with subtasks",
+                 children: [
+                    {name:"a subtask"}
+                 ]
+                }
+            ]
+        })
+    </script>
 }

@@ -1,38 +1,24 @@
-@(todoTree:TodoTree)
+@()
+<div ng-controller="ProjectListCtrl">
 
-@projectName(todoNode:TodoNode) = @{
-    todoNode.todo match {
-        case Some(todo) => todo.name
-        case None => "Inbox"
-    }
-}
+    <ul class="list-group" ng-if="projects.length > 0">
+        <li ng-repeat="project in projects" class="list-group-item">{{project.name}}
+            <ul ng-if="typeof(project.children) != 'undefined' && project.children.length > 0">
+                <li ng-repeat="subproject in project.children">{{subproject.name}}</li>
+            </ul>
+        </li>
+            <!--
+        <li class="list-group-item">Health</li>
+        <li class="list-group-item">Administrative</li>
+        <li class="list-group-item"><span class="caret"></span> Code
+            <ul>
+                <li class="active">Willing.to.do</li>
+                <li>Infinite Wall</li>
+            </ul>
+        </li>
+        -->
+    </ul>
 
-<ul class="list-group">
+    <p ng-if="projects.length == 0">You have no project or task yet</p>
 
-    @if(!todoTree.children.isEmpty) {
-        @for(project <- todoTree.children) {
-            <li class="list-group-item">@projectName(project)
-                @if(!project.children.isEmpty) {
-                    <ul>
-                    @for(subproject <- project.children) {
-                        <li>@projectName(subproject)</li>
-                    }
-                    </ul>
-                }
-            </li>
-        }
-    } else {
-        <p>You have no project or task yet</p>
-    }
-
-        <!--
-    <li class="list-group-item">Health</li>
-    <li class="list-group-item">Administrative</li>
-    <li class="list-group-item"><span class="caret"></span> Code
-        <ul>
-            <li class="active">Willing.to.do</li>
-            <li>Infinite Wall</li>
-        </ul>
-    </li>
-    -->
-</ul>
+</div>
