@@ -47,15 +47,14 @@
         <div class="row">
             <div id="left-sidebar" class="col-xs-4">
 
-                <div id="unified-views" class="list-group">
+                <div id="unified-views" class="list-group" ng-controller="ViewCtrl">
                     <ul class="nav nav-pills nav-stacked">
                         <li class="active"><a href=""><span class="glyphicon glyphicon-inbox"></span>
-                            Inbox<span class="badge pull-right">
-                                4</span></a></li>
+                            Inbox<span class="badge pull-right">{{inbox.count}}</span></a></li>
                         <li><a><span class="glyphicon glyphicon-time"></span>
-                            Priority</a></li>
+                            Priority<span class="badge pull-right">{{priority.count}}</span></a></li>
                         <li><a><span class="glyphicon glyphicon-heart"></span>
-                            Willing</a></li>
+                            Willing<span class="badge pull-right">{{willing.count}}</span></a></li>
                     </ul>
                 </div>
                 <div id="individual-views">
@@ -103,6 +102,7 @@
 
     <script type="text/javascript">
 
+    // our data to start with
     var tasks = [
         {name:"code", children:
             [{name: "Willing.to.do", children:[
@@ -123,21 +123,15 @@
 
 
         var app = angular.module("App", [])
+
+        app.controller("ViewCtrl", function($scope) {
+            $scope.inbox = {count:5}
+            $scope.priority = {count:1}
+            $scope.willing = {count:1}
+        })
+
         app.controller("ProjectListCtrl", function($scope) {
-            $scope.projects = [
-                {name: "a sample project"},
-                {name: "second project",
-                 children: []
-                },
-                {name: "project with subprojects",
-                 children: [
-                    {name:"a subproject"}
-                 ]
-                }
-            ]
-
-            $scope.tasks = []
-
+            $scope.projects = tasks
         })
 
         app.controller("LabelCtrl", function($scope) {
