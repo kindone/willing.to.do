@@ -94,23 +94,7 @@
                 </div>
                 -->
                 </div>
-                <ol class="breadcrumb">
-                    <li><a href="#">Code</a></li>
-                    <li class="active">Willing.to.do</li>
-
-                </ol>
-
-                <div id="content">
-                        <!-- header for each category (if exists) -->
-                        <!-- list up (hiearchical structure) of todos -->
-                    @partials.todoview()
-
-                    <div>
-                            <!--<p class="text-primary"><a href="javascript:alert('TODO')">+ Add Task</a></p>-->
-                        <p><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#todoform-modal">
-                            + Add Task</button></p>
-                    </div>
-                </div>
+                @partials.todoview()
 
             </div>
         </div>
@@ -118,6 +102,26 @@
     </div>
 
     <script type="text/javascript">
+
+    var tasks = [
+        {name:"code", children:
+            [{name: "Willing.to.do", children:[
+                {name: "Design and UX issues"},
+                {name: "Server-side implementation", children: [
+                    {name:"authentication"}
+                    ,{name:"authorization", children: [
+                        {name:"API should block unauhorized"},
+                        {name:"main page should provide unauhorized access"}
+                    ]}
+                ]},
+                {name: "Client-side implementation", children: [
+                    {name:"angularjs integration"}
+                ]}
+            ]}
+        ]}
+    ]
+
+
         var app = angular.module("App", [])
         app.controller("ProjectListCtrl", function($scope) {
             $scope.projects = [
@@ -141,17 +145,8 @@
         })
 
         app.controller("TaskCtrl", function($scope) {
-            $scope.tasks = [
-                {name: "a sample task"},
-                {name: "second task",
-                 children: []
-                },
-                {name: "project with subtasks",
-                 children: [
-                    {name:"a subtask"}
-                 ]
-                }
-            ]
+            $scope.ancestors = [tasks[0], tasks[0].children[0]]
+            $scope.tasks = tasks[0].children[0].children
         })
     </script>
 }
