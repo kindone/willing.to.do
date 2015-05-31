@@ -28,6 +28,8 @@ libraryDependencies ++= Seq(
 	"org.webjars" % "momentjs" % "2.9.0",
 	"org.webjars" % "Eonasdan-bootstrap-datetimepicker" % "4.7.14",
 	"org.webjars" % "angularjs" % "1.3.15",
+	"org.webjars" % "underscorejs" % "1.8.3",
+	"org.webjars" % "angular-ui-tree" % "2.1.5",
 	"org.scalacheck" %% "scalacheck" % "1.12.2" % "test",
 	"org.scalatestplus" %% "play" % "1.1.0" % "test"
 )

@@ -1,6 +1,6 @@
 @()
 
-<div id="todoform-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+<div id="todoform-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" ng-controller="TaskForm">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,14 +14,14 @@
                         <label for="NewTodoName" class="control-label col-sm-2">
                             Name</label>
                         <div class="input-group">
-                            <input name="name" id="NewTodoName" type="text" class="form-control" placeholder="Name">
+                            <input name="name" id="NewTodoName" type="text" class="form-control" placeholder="Name" ng-model="name">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="NewTodoDeadline" class="control-label col-sm-2">
                             Deadline</label>
                         <div class="input-group date" id="deadline-datetimepicker">
-                            <input name="deadline" id="NewTodoDeadline" type="text" class="form-control" placeholder="Deadline"/>
+                            <input name="deadline" id="NewTodoDeadline" type="text" class="form-control" placeholder="Deadline" ng-model="deadline"/>
                             <span class="input-group-addon">
                                 <div class="glyphicon glyphicon-calendar"></div>
                             </span>
@@ -29,7 +29,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="todoform-submit" type="button" class="btn btn-primary">Create</button>
+                    <button id="todoform-submit" type="button" class="btn btn-primary" ng-click="create()" data-toggle="modal" data-target="#todoform-modal">Create</button>
                 </div>
             </form>
         </div>
@@ -58,7 +58,7 @@
         }
 
         $('#deadline-datetimepicker').datetimepicker()
-
+/*
         $('#todoform-submit').click(
             function()
             {
@@ -74,6 +74,7 @@
                 })
             }
         )
+*/
     });
 </script>
 

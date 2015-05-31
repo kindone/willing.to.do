@@ -4,7 +4,7 @@
 	/*border-right:1px solid gray;*/
 }
 
-.nav-tabs .active {	
+.nav-tabs .active {
 	text-decoration:underline;
 }
 
@@ -15,7 +15,7 @@ ul.hierarchy {
 
 /** todo: replace color with less variable **/
 ul.hierarchy p.hierarchy-item-row  {
-    border-bottom:1px solid gray;
+    border-top:1px solid gray;
     margin:0px;
     padding:4px;
 }
@@ -45,3 +45,14 @@ ul.hierarchy  p.hierarchy-item-row:hover a.hierarchy-move-handle:hover > span.gl
     cursor:move;
 }
 
+.hierarchy.ng-hide-add.ng-hide-add-active,
+.hierarchy.ng-hide-remove.ng-hide-remove-active {
+    -webkit-transition: all linear 0.5s;
+    transition: all linear 0.5s;
+}
+
+.hierarchy.ng-hide {
+    line-height: 0;
+    opacity: 0;
+    padding: 0 10px;
+}

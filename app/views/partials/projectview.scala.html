@@ -1,24 +1,17 @@
 @()
-<div ng-controller="ProjectListCtrl">
+<div ng-controller="ProjectCtrl">
+
+    <script type="text/ng-template" id="project-hierarchy.html">
+        <a ng-click="setCurrentProject(project.id)">{{project.name}}</a>
+        <ul ng-if="typeof(project.children) != 'undefined' && project.children.length > 0">
+            <li ng-repeat="project in project.children" ng-include="'project-hierarchy.html'"></li>
+        </ul>
+    </script>
 
     <ul class="list-group" ng-if="projects.length > 0">
-        <li ng-repeat="project in projects" class="list-group-item">{{project.name}}
-            <ul ng-if="typeof(project.children) != 'undefined' && project.children.length > 0">
-                <li ng-repeat="subproject in project.children">{{subproject.name}}</li>
-            </ul>
-        </li>
-            <!--
-        <li class="list-group-item">Health</li>
-        <li class="list-group-item">Administrative</li>
-        <li class="list-group-item"><span class="caret"></span> Code
-            <ul>
-                <li class="active">Willing.to.do</li>
-                <li>Infinite Wall</li>
-            </ul>
-        </li>
-        -->
+        <li ng-repeat="project in projects" class="list-group-item" ng-include="'project-hierarchy.html'"></li>
     </ul>
 
     <p ng-if="projects.length == 0">You have no project or task yet</p>
-
+    <p><button type="button" class="btn btn-primary">+ Add Project</button></p>
 </div>

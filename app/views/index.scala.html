@@ -43,17 +43,19 @@
         </div>
     </header>
 
+    <div ng-controller="Init"></div>
+
     <div id="top-container" class="container">
         <div class="row">
             <div id="left-sidebar" class="col-xs-4">
 
                 <div id="unified-views" class="list-group" ng-controller="ViewCtrl">
                     <ul class="nav nav-pills nav-stacked">
-                        <li class="active"><a href=""><span class="glyphicon glyphicon-inbox"></span>
+                        <li class="active"><a href="" ng-click=""><span class="glyphicon glyphicon-inbox"></span>
                             Inbox<span class="badge pull-right">{{inbox.count}}</span></a></li>
-                        <li><a><span class="glyphicon glyphicon-time"></span>
+                        <li><a href="" ng-click=""><span class="glyphicon glyphicon-time"></span>
                             Priority<span class="badge pull-right">{{priority.count}}</span></a></li>
-                        <li><a><span class="glyphicon glyphicon-heart"></span>
+                        <li><a href="" ng-click=""><span class="glyphicon glyphicon-heart"></span>
                             Willing<span class="badge pull-right">{{willing.count}}</span></a></li>
                     </ul>
                 </div>
@@ -104,43 +106,246 @@
 
     // our data to start with
     var tasks = [
-        {name:"code", children:
-            [{name: "Willing.to.do", children:[
-                {name: "Design and UX issues"},
-                {name: "Server-side implementation", children: [
-                    {name:"authentication"}
-                    ,{name:"authorization", children: [
-                        {name:"API should block unauhorized"},
-                        {name:"main page should provide unauhorized access"}
-                    ]}
-                ]},
-                {name: "Client-side implementation", children: [
-                    {name:"angularjs integration"}
-                ]}
-            ]}
-        ]}
+        {id: 0, name: "<ROOT>", children: [1]},
+        {id: 1, name: "code", parent: 0, children: [2]},
+        {id: 2, name: "Willing.to.do", parent: 1, children:[3,4,9]},
+        {id: 3, name: "Design and UX issues", parent: 2},
+        {id: 4, name: "Server-side implementation", parent: 2, children: [5,6]},
+        {id: 5, name: "authentication", parent: 4},
+        {id: 6, name: "authorization", parent: 4, children: [7,8]},
+        {id: 7, name: "API should block unauthorized", parent: 6},
+        {id: 8, name: "main page should provide unauthorized access", parent: 6},
+        {id: 9, name: "Client-side implementation", parent: 2, children: [10]},
+        {id: 10, name: "angularjs integration", parent: 9}
     ]
 
+    function getTasksById()
+    {
+        var byId = {}
+        _(tasks).each(function(task){
+            byId[task.id] =  task
+        })
+        return byId
+    }
 
-        var app = angular.module("App", [])
+    var tasksById = getTasksById()
 
-        app.controller("ViewCtrl", function($scope) {
-            $scope.inbox = {count:5}
-            $scope.priority = {count:1}
-            $scope.willing = {count:1}
+    function createTask(name, deadline, parentId) {
+        var newId = _(tasks).max(function(task) {
+            return task.id
+        }).id + 1
+
+        var newTask = {id: newId, name: name, parent: parentId, deadline: deadline}
+        tasks.push(newTask)
+
+        // TODO: want to insert at specific position
+        if(parentId)  {
+            if(typeof(tasksById[parentId].children) == 'undefined')
+                tasksById[parentId].children = [newId]
+            else
+                tasksById[parentId].children.push(newId)
+        }
+    }
+
+    function reorderTask(id, parentId, index, newIndex) {
+        if(!parentId)
+            parentId = 0
+        var arr = tasks[parentId].children
+        var target = tasks[parentId].children[index]
+        arr.splice(index, 1) // remove at old index
+        arr.splice(newIndex, 0, target) // insert at new index
+    }
+
+    function moveTask(id, parentId, index, newParentId, newIndex) {
+        var arr = tasks[parentId].children
+        var newArr = tasks[newParentId].children
+        var target = tasks[parentId].children[index]
+        // set new parent
+        tasksById[target].parent = newParentId
+
+        arr.splice(index, 1) // remove at old index
+        if(arr.length == 0)
+            delete tasks[parentId].children
+
+        if(newArr)
+            newArr.splice(newIndex, 0, target) // insert at new index
+        else
+            tasks[newParentId].children = [target] // create new children array
+    }
+
+    var getRootLevelTasks = function() {
+        return _(tasks).filter(function(task) {
+            return task.parent == 0
+        })
+    }
+
+    var labels = []
+
+    var scopeTask = tasksById[2]
+
+    function getAncestry(task) {
+        var ancestry = []
+        var parent = typeof(task.parent) != 'undefined' ? tasksById[task.parent] : task.parent
+        while(typeof(parent) != 'undefined' && parent.id != 0) {
+            ancestry.unshift(parent)
+            parent = typeof(parent.parent) != 'undefined' ? tasksById[parent.parent] : parent.parent
+        }
+        ancestry.push(task) // self
+        return ancestry
+    }
+
+    function buildTree(task) {
+        var taskTree = {id: task.id, name: task.name, parent: task.parent, children: []}
+
+        taskTree.children = _(task.children).map(function(childId){
+            return buildTree(tasksById[childId])
+        })
+        return taskTree
+    }
+
+    function buildLeaflessTree(task)
+    {
+        var taskTree = {id: task.id, name: task.name, parent: task.parent, children: []}
+
+        taskTree.children = _(_(task.children).map(function(childId){
+            if(tasksById[childId].children)
+                return buildLeaflessTree(tasksById[childId])
+            else
+                return null
+        })).compact()
+        return taskTree
+    }
+
+    var app = angular.module("App", ['ui.tree'])
+
+    app.controller("Init", ['$scope', '$rootScope', function($scope, $rootScope){
+        // update base array
+        $rootScope.$on('taskChange', function(event, flag) {
+            tasksById = getTasksById()
+            console.log('taskChange')
         })
 
-        app.controller("ProjectListCtrl", function($scope) {
-            $scope.projects = tasks
+        $rootScope.$on('openNewTaskForm', function(event, flag) {
+            console.log('openNewTaskForm')
         })
 
-        app.controller("LabelCtrl", function($scope) {
-            $scope.labels = []
+        $rootScope.$on('scopeChange', function(event, flag) {
+            console.log('scopeChange')
         })
 
-        app.controller("TaskCtrl", function($scope) {
-            $scope.ancestors = [tasks[0], tasks[0].children[0]]
-            $scope.tasks = tasks[0].children[0].children
+    }])
+
+    app.controller("ViewCtrl", function($scope) {
+        $scope.inbox = {count:5}
+        $scope.priority = {count:1}
+        $scope.willing = {count:1}
+    })
+
+    app.controller("ProjectCtrl", ['$scope', '$rootScope', function($scope, $rootScope) {
+        function buildProjects() {
+            return _(getRootLevelTasks()).map(function(task) {
+                return buildLeaflessTree(task)
+            })
+        }
+
+        $scope.projects = buildProjects()
+
+        $scope.setCurrentProject = function(taskid) {
+            var task = tasksById[taskid]
+            scopeTask = task
+            $rootScope.$emit('scopeChange', task)
+        }
+
+        $rootScope.$on('taskChange', function(event, flag) {
+            console.log(tasks)
+            $scope.projects = buildProjects()
         })
+    }])
+
+    app.controller("LabelCtrl", function($scope) {
+        $scope.labels = labels
+    })
+
+    app.controller("TaskForm", ['$scope', '$rootScope', function($scope, $rootScope) {
+        $scope.create = function() {
+            createTask($scope.name, $scope.deadline, $scope.parentId)
+            $rootScope.$emit('taskChange')
+        }
+
+        $scope.init = function(parentId) {
+            $scope.name = ""
+            $scope.deadline = Date.now().toString()
+            $scope.parentId = parentId
+            console.log(parentId)
+        }
+
+        $rootScope.$on('openNewTaskForm', function(event) {
+            $scope.init(scopeTask.id)
+        })
+    }])
+
+    app.controller("TaskCtrl", ['$scope', '$rootScope', function($scope, $rootScope) {
+        $scope.treeOptions = {
+            dropped: function(event) {
+                // may have not moved
+                if(event.source.nodesScope != event.dest.nodesScope || event.source.index != event.dest.index)
+                {
+                    var id = event.source.nodeScope.$modelValue.id
+                    var parentId = event.source.nodesScope.$nodeScope ? event.source.nodesScope.$nodeScope.$modelValue.id : null
+                    var newParentId = event.dest.nodesScope.$nodeScope ? event.dest.nodesScope.$nodeScope.$modelValue.id : null
+                    var index = event.source.index
+                    var newIndex = event.dest.index
+                    console.log("dropped: ", id, parentId, newParentId, event.source.index, event.dest.index)
+
+                    if(parentId == null)
+                        parentId = scopeTask.id
+                    if(newParentId == null)
+                        newParentId = scopeTask.id
+
+                    if(parentId == newParentId)
+                        reorderTask(id, parentId, index, newIndex)
+                    else
+                        moveTask(id, parentId, index, newParentId, newIndex)
+
+                    $rootScope.$emit('taskChange', true)
+                }
+                //console.log("tasks updated: ", tasks)
+            }
+        }
+
+        $scope.setCurrentScope = function(task) {
+            $scope.breadcrumb = getAncestry(task)
+            $scope.tasks = _(task.children).map(function(childId) {
+                return buildTree(tasksById[childId])
+            })
+        }
+
+        $scope.toggleChildren = function(scope) {
+            console.log(scope)
+            scope.collapsed = scope.collapsed ? false : true
+        }
+
+        $scope.setCurrentScope(scopeTask)
+
+        $scope.openNewTaskForm = function() {
+            $rootScope.$emit('openNewTaskForm')
+        }
+
+        $rootScope.$on('scopeChange', function(event, task) {
+            $scope.setCurrentScope(task)
+        })
+
+        $rootScope.$on('taskChange', function(event, flag) {
+            if(!flag)
+            {
+                if(scopeTask.children)  {
+                    $scope.tasks = _(scopeTask.children).map(function(childId) {
+                        return buildTree(tasksById[childId])
+                    })
+                }
+            }
+        })
+
+    }])
     </script>
 }
