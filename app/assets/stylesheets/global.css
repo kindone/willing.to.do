@@ -56,3 +56,7 @@ ul.hierarchy  p.hierarchy-item-row:hover a.hierarchy-move-handle:hover > span.gl
     opacity: 0;
     padding: 0 10px;
 }
+
+.selected {
+  font-weight: bold;
+}

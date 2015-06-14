@@ -106,6 +106,7 @@
 
     // our data to start with
     var tasks = [
+        {id: -1, name: "<FORM>"},
         {id: 0, name: "<ROOT>", children: [1]},
         {id: 1, name: "code", parent: 0, children: [2]},
         {id: 2, name: "Willing.to.do", parent: 1, children:[3,4,9]},
@@ -130,7 +131,7 @@
 
     var tasksById = getTasksById()
 
-    function createTask(name, deadline, parentId) {
+    function createTask(name, deadline, parentId, position = -1) {
         var newId = _(tasks).max(function(task) {
             return task.id
         }).id + 1
@@ -142,35 +143,39 @@
         if(parentId)  {
             if(typeof(tasksById[parentId].children) == 'undefined')
                 tasksById[parentId].children = [newId]
-            else
-                tasksById[parentId].children.push(newId)
+            else  {
+                if(position >= 0)
+                    tasksById[parentId].children.splice(position, 0, newId)
+                else
+                    tasksById[parentId].children.push(newId)
+            }
         }
     }
 
     function reorderTask(id, parentId, index, newIndex) {
         if(!parentId)
             parentId = 0
-        var arr = tasks[parentId].children
-        var target = tasks[parentId].children[index]
+        var arr = tasksById[parentId].children
+        var target = tasksById[parentId].children[index]
         arr.splice(index, 1) // remove at old index
         arr.splice(newIndex, 0, target) // insert at new index
     }
 
     function moveTask(id, parentId, index, newParentId, newIndex) {
-        var arr = tasks[parentId].children
-        var newArr = tasks[newParentId].children
-        var target = tasks[parentId].children[index]
+        var arr = tasksById[parentId].children
+        var newArr = tasksById[newParentId].children
+        var target = tasksById[parentId].children[index]
         // set new parent
         tasksById[target].parent = newParentId
 
         arr.splice(index, 1) // remove at old index
         if(arr.length == 0)
-            delete tasks[parentId].children
+            delete tasksById[parentId].children
 
         if(newArr)
             newArr.splice(newIndex, 0, target) // insert at new index
         else
-            tasks[newParentId].children = [target] // create new children array
+            tasksById[newParentId].children = [target] // create new children array
     }
 
     var getRootLevelTasks = function() {
@@ -186,11 +191,12 @@
     function getAncestry(task) {
         var ancestry = []
         var parent = typeof(task.parent) != 'undefined' ? tasksById[task.parent] : task.parent
+        // traverse up recursively
         while(typeof(parent) != 'undefined' && parent.id != 0) {
             ancestry.unshift(parent)
             parent = typeof(parent.parent) != 'undefined' ? tasksById[parent.parent] : parent.parent
         }
-        ancestry.push(task) // self
+        ancestry.push(task) // ancestry includes self
         return ancestry
     }
 
@@ -203,6 +209,7 @@
         return taskTree
     }
 
+    // for displaying projects
     function buildLeaflessTree(task)
     {
         var taskTree = {id: task.id, name: task.name, parent: task.parent, children: []}
@@ -248,6 +255,10 @@
             })
         }
 
+        $scope.isCurrentProject = function(project) {
+             return project.id == scopeTask.id
+         }
+
         $scope.projects = buildProjects()
 
         $scope.setCurrentProject = function(taskid) {
@@ -257,7 +268,7 @@
         }
 
         $rootScope.$on('taskChange', function(event, flag) {
-            console.log(tasks)
+            console.log('updating projects', tasks)
             $scope.projects = buildProjects()
         })
     }])
@@ -285,9 +296,12 @@
     }])
 
     app.controller("TaskCtrl", ['$scope', '$rootScope', function($scope, $rootScope) {
+
+        $scope.addTaskEnabled = true
+
         $scope.treeOptions = {
             dropped: function(event) {
-                // may have not moved
+                // only when node dropped to non-self
                 if(event.source.nodesScope != event.dest.nodesScope || event.source.index != event.dest.index)
                 {
                     var id = event.source.nodeScope.$modelValue.id
@@ -295,12 +309,21 @@
                     var newParentId = event.dest.nodesScope.$nodeScope ? event.dest.nodesScope.$nodeScope.$modelValue.id : null
                     var index = event.source.index
                     var newIndex = event.dest.index
-                    console.log("dropped: ", id, parentId, newParentId, event.source.index, event.dest.index)
+                    console.log("dropped: ",
+                        "id:", id,
+                        "parentId:", parentId,
+                        "newParentId:", newParentId,
+                        "index:", event.source.index,
+                        "newIndex:", event.dest.index)
 
-                    if(parentId == null)
+                    if(parentId == null) {
+                        console.log("null parent:", parentId, scopeTask.id)
                         parentId = scopeTask.id
-                    if(newParentId == null)
+                    }
+                    if(newParentId == null)  {
+                        console.log("null new parent:", newParentId, scopeTask.id)
                         newParentId = scopeTask.id
+                    }
 
                     if(parentId == newParentId)
                         reorderTask(id, parentId, index, newIndex)
@@ -329,6 +352,35 @@
 
         $scope.openNewTaskForm = function() {
             $rootScope.$emit('openNewTaskForm')
+        }
+
+        $scope.createInplaceTaskForm = function() {
+           // place <FORM> node into the tree
+           $scope.formTask = tasksById[-1]
+           $scope.formTask.tempName = ""
+           scopeTask.children.push(-1)
+           $scope.formTask.parent = scopeTask.id
+           // emit taskchange
+           $rootScope.$emit('taskChange')
+           $scope.addTaskEnabled = false
+
+           setTimeout(function() {
+                $('#task-inplace-form').focus()
+                console.log('GO')
+            },100)
+        }
+
+        $scope.confirmCreateNewTask = function() {
+            var formTask = tasksById[-1]
+            var parentTask = tasksById[formTask.parent]
+            var position = _(parentTask.children).indexOf(-1)
+            // remove form task in the children list first
+            parentTask.children = _(parentTask.children).without(-1)
+            // next it will take care of the position
+            createTask(formTask.tempName, formTask.deadline, formTask.parent, position)
+
+            $rootScope.$emit('taskChange')
+            $scope.addTaskEnabled = true
         }
 
         $rootScope.$on('scopeChange', function(event, task) {

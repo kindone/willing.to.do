@@ -14,10 +14,21 @@
             <a class="hierarchy-move-handle" ui-tree-handle><span class="glyphicon glyphicon-align-justify invisible"></span></a>
             <span ng-class="['glyphicon', collapsed ? 'glyphicon-triangle-right' : 'glyphicon-triangle-bottom']" ng-if="task.children.length > 0"  ng-click="toggle()"></span>
             <span class="glyphicon glyphicon-stop" ng-if="task.children===undefined || task.children.length == 0"></span>
-            <span class="hierarchy-item-row-body">
+
+            <!-- consolidated task -->
+            <span class="hierarchy-item-row-body" ng-if="task.id > 0">
                 <span class="hierarchy-item-row-text">{{task.name}}</span>
                 <a><span class="glyphicon glyphicon-blackboard invisible"></span></a>
                 <a><span class="glyphicon glyphicon-option-horizontal invisible pull-right"></span></a>
+            </span>
+
+            <!-- pending task -->
+            <span class="hierarchy-item-row-body" ng-if="task.id <= 0">
+                <input id="task-inplace-form" class="hierarchy-item-row-text" type="text" ng-model="formTask.tempName" ng-keypress="($event.which === 13 && confirmCreateNewTask())">
+                <span class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-success" ng-click="confirmCreateNewTask()">Confirm</button>
+                    <button type="button" class="btn btn-sm btn-default">Cancel</button>
+                </span>
             </span>
         </script>
 
@@ -33,13 +44,15 @@
                 <li ui-tree-node ng-repeat="task in tasks" class="hierarchy-item" ng-include="'hierarchy.html'"></li>
             </ul>
         </div>
+
         <div ng-if="tasks.length == 0">
                 You have no tasks to display
         </div>
-
+        <br/>
         <div>
                 <!--<p class="text-primary"><a href="javascript:alert('TODO')">+ Add Task</a></p>-->
-            <p><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#todoform-modal" ng-click="openNewTaskForm()">
+            <p><!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#todoform-modal" ng-click="openNewTaskForm()">-->
+                <button type="button" class="btn btn-primary" ng-click="createInplaceTaskForm()" ng-show="addTaskEnabled">
                 + Add Task</button></p>
         </div>
     </div>
