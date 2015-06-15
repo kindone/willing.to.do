@@ -178,6 +178,20 @@
             tasksById[newParentId].children = [target] // create new children array
     }
 
+    function deleteTask(id) {
+        if(tasksById[id].parent > 0)
+        {
+            var parent = tasksById[tasksById[id].parent]
+            parent.children = _(parent.children).without(id)
+        }
+
+        tasks = _(tasks).reject(function(task) {
+            return task.id == id
+        })
+
+
+    }
+
     var getRootLevelTasks = function() {
         return _(tasks).filter(function(task) {
             return task.parent == 0
@@ -383,6 +397,12 @@
             $scope.addTaskEnabled = true
         }
 
+        $scope.deleteTask = function(taskId) {
+            deleteTask(taskId)
+            $rootScope.$emit('taskChange')
+        }
+
+        // event handlers
         $rootScope.$on('scopeChange', function(event, task) {
             $scope.setCurrentScope(task)
         })

@@ -19,7 +19,16 @@
             <span class="hierarchy-item-row-body" ng-if="task.id > 0">
                 <span class="hierarchy-item-row-text">{{task.name}}</span>
                 <a><span class="glyphicon glyphicon-blackboard invisible"></span></a>
-                <a><span class="glyphicon glyphicon-option-horizontal invisible pull-right"></span></a>
+
+                <span class="dropdown pull-right">
+                <a href="javascript:void(0);" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="glyphicon glyphicon-option-horizontal invisible"></span>
+                </a>
+
+                <ul class="dropdown-menu pull-right" role="menu">
+                    <li><a href="javascript:void(0);" ng-click="deleteTask(task.id)">Delete</a></li>
+                </ul>
+                </span>
             </span>
 
             <!-- pending task -->
@@ -33,10 +42,12 @@
         </script>
 
         <script type="text/ng-template" id="hierarchy.html">
-            <p  class="hierarchy-item-row" ng-include="'hierarchy-item.html'"></p>
-            <ul ui-tree-nodes ng-model="task.children" class="hierarchy" ng-show="!collapsed">
-                <li ui-tree-node ng-repeat="task in task.children" class="hierarchy-item" ng-include="'hierarchy.html'"></li>
-            </ul>
+            <div class="tree-node tree-node-content">
+                <p  class="hierarchy-item-row" ng-include="'hierarchy-item.html'"></p>
+                <ul ui-tree-nodes ng-model="task.children" class="hierarchy" ng-show="!collapsed">
+                    <li ui-tree-node ng-repeat="task in task.children" class="hierarchy-item" ng-include="'hierarchy.html'"></li>
+                </ul>
+            </div>
         </script>
 
         <div ui-tree="treeOptions" class="hierarchy">

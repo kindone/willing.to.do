@@ -33,7 +33,7 @@ ul.hierarchy  p.hierarchy-item-row:hover > a.hierarchy-move-handle > span.glyphi
     visibility:visible !important;
 }
 
-ul.hierarchy  p.hierarchy-item-row:hover span.glyphicon-option-horizontal {
+ul.hierarchy  p.hierarchy-item-row:hover .glyphicon-option-horizontal {
     visibility:visible !important;
 }
 
@@ -59,4 +59,11 @@ ul.hierarchy  p.hierarchy-item-row:hover a.hierarchy-move-handle:hover > span.gl
 
 .selected {
   font-weight: bold;
+}
+
+.angular-ui-tree-placeholder {
+    border: 2px dashed #bed2db;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
