@@ -178,7 +178,22 @@
             tasksById[newParentId].children = [target] // create new children array
     }
 
-    function deleteTask(id) {
+    function deleteTask(id)
+    {
+        deleteTree(id)
+    }
+
+    function deleteTree(id) {
+        var task = tasksById[id]
+        if(task.children)  {
+            _(task.children).each(function(childId) {
+                deleteTree(childId)
+            })
+        }
+        deleteSingleTask(id)
+    }
+
+    function deleteSingleTask(id) {
         if(tasksById[id].parent > 0)
         {
             var parent = tasksById[tasksById[id].parent]
@@ -188,8 +203,6 @@
         tasks = _(tasks).reject(function(task) {
             return task.id == id
         })
-
-
     }
 
     var getRootLevelTasks = function() {
