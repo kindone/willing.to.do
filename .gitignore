@@ -19,3 +19,4 @@ dist
 /.settings
 /*.sublime-project
 *.db
+*.db.old

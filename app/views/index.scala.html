@@ -190,10 +190,7 @@
                 deleteTree(childId)
             })
         }
-        deleteSingleTask(id)
-    }
-
-    function deleteSingleTask(id) {
+        // delete single task
         if(tasksById[id].parent > 0)
         {
             var parent = tasksById[tasksById[id].parent]
