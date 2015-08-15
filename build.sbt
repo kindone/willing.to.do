@@ -4,7 +4,7 @@ version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.2"
 
 resolvers ++= Seq(
 	"26Lights releases" at "http://build.26source.org/nexus/content/repositories/public-releases",
@@ -25,6 +25,7 @@ libraryDependencies ++= Seq(
 	"de.svenkubiak" % "jBCrypt" % "0.4",
 	"jp.t2v" %% "play2-auth-test" % "0.13.2" % "test",
 	"org.seleniumhq.selenium" % "selenium-java" % "2.31.0",
+	"org.webjars.npm" % "jquery" % "2.1.4",
 	"org.webjars" % "momentjs" % "2.9.0",
 	"org.webjars" % "Eonasdan-bootstrap-datetimepicker" % "4.7.14",
 	"org.webjars" % "angularjs" % "1.3.15",
