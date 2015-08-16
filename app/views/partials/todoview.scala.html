@@ -2,8 +2,8 @@
 <div ng-controller="TaskCtrl">
     <ol class="breadcrumb">
         <li ng-repeat="item in breadcrumb" ng-class="{'active':$last}">
-            <a ng-if="!$last" href="#">{{item.name}}</a>
-            <span ng-if="$last">{{item.name}}</span>
+            <a ng-if="!$last" href="#" ng-cloak>{{item.name}}</a>
+            <span ng-if="$last" ng-cloak>{{item.name}}</span>
         </li>
     </ol>
 
@@ -17,7 +17,7 @@
 
             <!-- consolidated task -->
             <span class="hierarchy-item-row-body" ng-if="task.id > 0">
-                <span class="hierarchy-item-row-text">{{task.name}}</span>
+                <span class="hierarchy-item-row-text" ng-cloak>{{task.name}}</span>
                 <a><span class="glyphicon glyphicon-blackboard invisible"></span></a>
 
                 <span class="dropdown pull-right">

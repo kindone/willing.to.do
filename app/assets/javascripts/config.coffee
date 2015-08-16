@@ -3,9 +3,7 @@ init = (requirejs) ->
   requirejs.config
     shim:{}
 
-  require ['AngularApp', 'app'], (ngApp) ->
-    console.log('initializing..')
-    ngApp.init()
-    console.log('initialized!')
+  require ['main'], (app) ->
+    app.init()
 
 init(requirejs)
