@@ -1,7 +1,11 @@
 define [], () ->
 
-  class TaskUtils
+  class TaskWithoutChildren
+    constructor:(task) ->
+      [@id, @name, @parent] = [task.id, task.name, task.parent]
 
+
+  class TaskUtils
     constructor: (taskManager) ->
       @taskManager = taskManager
 
@@ -17,7 +21,7 @@ define [], () ->
       ancestry
 
     buildTaskTree: (task) ->
-      taskTree = {id: task.id, name: task.name, parent: task.parent, children: []}
+      taskTree = new TaskWithoutChildren(task)
 
       taskTree.children = _(task.children).map (childId) =>
         @buildTaskTree(@taskManager.findById(childId))
@@ -26,7 +30,7 @@ define [], () ->
 
     # for displaying projects
     buildTaskTreeLeafless: (task) ->
-      taskTree = {id: task.id, name: task.name, parent: task.parent, children: []}
+      taskTree = new TaskWithoutChildren(task)
       taskTree.children = _(_(task.children).map((childId) =>
         if @taskManager.findById(childId).children
           @buildTaskTreeLeafless(@taskManager.findById(childId))

@@ -16,7 +16,6 @@ define ['./TaskManager', './TaskUtils', './DefaultTasks',
   new LabelController(ngApp, taskManager, taskUtils)
   new ProjectController(ngApp, taskManager, taskUtils)
 
-
   # initialize angular module
   ngApp.run ['$rootScope', ($rootScope) ->
     # update Tasks

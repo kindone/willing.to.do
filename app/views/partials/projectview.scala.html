@@ -1,5 +1,5 @@
 @()
-<div ng-controller="ProjectCtrl">
+<div ng-controller="ProjectController">
 
     <script type="text/ng-template" id="project-hierarchy.html">
         <a ng-class="{selected: isCurrentProject(project)}" ng-click="setCurrentProject(project.id)" ng-cloak>{{project.name}}</a>
@@ -10,8 +10,10 @@
 
     <ul class="list-group" ng-if="projects.length > 0">
         <li ng-repeat="project in projects" class="list-group-item" ng-include="'project-hierarchy.html'"></li>
+
     </ul>
 
     <p ng-if="projects.length == 0">You have no project or task yet</p>
-    <p><button type="button" class="btn btn-primary">+ Add Project</button></p>
+    @*<p><button type="button" class="btn btn-primary">+ Add Project</button></p>*@
 </div>
+

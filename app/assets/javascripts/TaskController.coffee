@@ -3,7 +3,7 @@ define [], () ->
   class TaskController
 
     constructor: (ngApp, taskManager, taskUtils) ->
-      ngApp.controller "TaskCtrl", ['$scope', '$rootScope', ($scope, $rootScope) ->
+      ngApp.controller "TaskController", ['$scope', '$rootScope', ($scope, $rootScope) ->
         $scope.addTaskEnabled = true
         $scope.treeOptions = {
           dropped: (event) ->
@@ -21,11 +21,11 @@ define [], () ->
                 "index:", event.source.index,
                 "newIndex:", event.dest.index
 
-              if parentId == null
+              unless parentId?
                 console.log "null parent:", parentId, $rootScope.scopeTask.id
                 parentId = $rootScope.scopeTask.id
 
-              if newParentId == null
+              unless newParentId?
                 console.log "null new parent:", newParentId, $rootScope.scopeTask.id
                 newParentId = $rootScope.scopeTask.id
 
@@ -37,6 +37,11 @@ define [], () ->
               $rootScope.$emit 'taskChange', true
               #console.log "tasks updated: ", tasks
         }
+
+        $scope.setCurrentProject = (taskid) ->
+          task = taskManager.findById(taskid)
+          $rootScope.scopeTask = task
+          $rootScope.$emit 'scopeChange', task
 
         $scope.setCurrentScope = (task) ->
           $scope.breadcrumb = taskUtils.buildTaskAncestry(task)
@@ -50,14 +55,14 @@ define [], () ->
 
         $scope.setCurrentScope($rootScope.scopeTask)
 
-        $scope.openNewTaskForm = () ->
+        $scope.openNewTaskForm = ->
           $rootScope.$emit 'openNewTaskForm'
 
-        $scope.createInplaceTaskForm = () ->
+        $scope.createInplaceTaskForm = ->
           # place <FORM> node into the tree
-          $scope.formTask = taskManager.findById(-1)
+          $scope.formTask = taskManager.getFormTask()
           $scope.formTask.tempName = ""
-          $rootScope.scopeTask.children.push(-1)
+          $rootScope.scopeTask.children.push(taskManager.formTaskId)
           $scope.formTask.parent = $rootScope.scopeTask.id
           # emit taskchange
           $rootScope.$emit('taskChange')
@@ -69,13 +74,22 @@ define [], () ->
           ,100)
 
         $scope.confirmCreateNewTask = ->
-          formTask = taskManager.findById(-1)
+          formTask = taskManager.getFormTask()
           parentTask = taskManager.findById(formTask.parent)
-          position = _(parentTask.children).indexOf(-1)
+          position = _(parentTask.children).indexOf(taskManager.formTaskId)
           # remove form task in the children list first
-          parentTask.children = _(parentTask.children).without(-1)
+          parentTask.children = _(parentTask.children).without(taskManager.formTaskId)
           # next it will take care of the position
           taskManager.create(formTask.tempName, formTask.deadline, formTask.parent, position)
+
+          $rootScope.$emit 'taskChange'
+          $scope.addTaskEnabled = true
+
+        $scope.cancelCreateNewTask = ->
+          formTask = taskManager.getFormTask()
+          parentTask = taskManager.findById(formTask.parent)
+          # remove form task in the children list
+          parentTask.children = _(parentTask.children).without(taskManager.formTaskId)
 
           $rootScope.$emit 'taskChange'
           $scope.addTaskEnabled = true

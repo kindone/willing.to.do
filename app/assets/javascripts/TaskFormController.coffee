@@ -2,7 +2,7 @@ define [], ()->
   class TaskFormController
 
     constructor: (ngApp, taskManager, taskUtils) ->
-      ngApp.controller "TaskForm", ['$scope', '$rootScope', ($scope, $rootScope) ->
+      ngApp.controller "TaskFormController", ['$scope', '$rootScope', ($scope, $rootScope) ->
         $scope.create = ->
           createTask $scope.name, $scope.deadline, $scope.parentId
           $rootScope.$emit 'taskChange'

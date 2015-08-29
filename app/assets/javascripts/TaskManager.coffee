@@ -3,16 +3,23 @@ define [], () ->
   class TaskManager
 
     constructor:(@tasks) ->
-      @tasksById = @genTasksByIdTable()
+      formTask = {id: -1, name: "<FORM>"}
+      @tasks.unshift(formTask)
+      @tasksById = @genTasksByIdTable(@tasks)
 
-    genTasksByIdTable: ->
+    genTasksByIdTable: (tasks) ->
       byId = {}
-      _(@tasks).each (task) ->
+      _(tasks).each (task) ->
         byId[task.id] = task
       byId
 
+    formTaskId: -1
+
+    getFormTask: () ->
+      @tasksById[@formTaskId]
+
     rebuildIdTable: ->
-      @tasksById = @genTasksByIdTable()
+      @tasksById = @genTasksByIdTable(@tasks)
 
     findById: (id) ->
       @tasksById[id]

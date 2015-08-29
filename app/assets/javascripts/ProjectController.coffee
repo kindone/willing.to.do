@@ -3,7 +3,7 @@ define [], () ->
   class ProjectController
     constructor: (ngApp, taskManager, taskUtils)->
 
-      ngApp.controller "ProjectCtrl", ['$scope', '$rootScope', ($scope, $rootScope) ->
+      ngApp.controller "ProjectController", ['$scope', '$rootScope', ($scope, $rootScope) ->
         buildProjects = () ->
           _(taskManager.getRootLevelTasks()).map (task) ->
             taskUtils.buildTaskTreeLeafless(task)

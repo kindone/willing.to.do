@@ -1,8 +1,8 @@
 @()
-<div ng-controller="TaskCtrl">
+<div ng-controller="TaskController">
     <ol class="breadcrumb">
         <li ng-repeat="item in breadcrumb" ng-class="{'active':$last}">
-            <a ng-if="!$last" href="#" ng-cloak>{{item.name}}</a>
+            <a ng-if="!$last" ng-click="setCurrentProject(item.id)" ng-cloak>{{item.name}}</a>
             <span ng-if="$last" ng-cloak>{{item.name}}</span>
         </li>
     </ol>
@@ -36,7 +36,7 @@
                 <input id="task-inplace-form" class="hierarchy-item-row-text" type="text" ng-model="formTask.tempName" ng-keypress="($event.which === 13 && confirmCreateNewTask())">
                 <span class="btn-group" role="group">
                     <button type="button" class="btn btn-sm btn-success" ng-click="confirmCreateNewTask()">Confirm</button>
-                    <button type="button" class="btn btn-sm btn-default">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-click="cancelCreateNewTask()">Cancel</button>
                 </span>
             </span>
         </script>
