@@ -1,6 +1,6 @@
 @()
 
-<div id="todoform-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" ng-controller="TaskFormController">
+<div id="taskform-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" ng-controller="TaskFormController">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,20 +8,20 @@
                 <h4 class="modal-title" id="myModalLabel">Add Task</h4>
             </div>
 
-            <form id="todoform" class="form-horizontal" method="POST" action="/api/todo">
+            <form id="taskform" class="form-horizontal" method="POST" action="/api/todo">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="NewTodoName" class="control-label col-sm-2">
+                        <label for="NewTaskName" class="control-label col-sm-2">
                             Name</label>
                         <div class="input-group">
-                            <input name="name" id="NewTodoName" type="text" class="form-control" placeholder="Name" ng-model="name">
+                            <input name="name" id="NewTaskName" type="text" class="form-control" placeholder="Name" ng-model="name">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="NewTodoDeadline" class="control-label col-sm-2">
+                        <label for="NewTaskDeadline" class="control-label col-sm-2">
                             Deadline</label>
                         <div class="input-group date" id="deadline-datetimepicker">
-                            <input name="deadline" id="NewTodoDeadline" type="text" class="form-control" placeholder="Deadline" ng-model="deadline"/>
+                            <input name="deadline" id="NewTaskDeadline" type="text" class="form-control" placeholder="Deadline" ng-model="deadline"/>
                             <span class="input-group-addon">
                                 <div class="glyphicon glyphicon-calendar"></div>
                             </span>
@@ -29,7 +29,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="todoform-submit" type="button" class="btn btn-primary" ng-click="create()" data-toggle="modal" data-target="#todoform-modal">Create</button>
+                    <button id="taskform-submit" type="button" class="btn btn-primary" ng-click="create()" data-toggle="modal" data-target="#taskform-modal">Create</button>
                 </div>
             </form>
         </div>
@@ -59,14 +59,14 @@
 
         $('#deadline-datetimepicker').datetimepicker()
 /*
-        $('#todoform-submit').click(
+        $('#taskform-submit').click(
             function()
             {
                 $.ajax('/api/todo', {
                     method: 'POST',
-                    data: $('#todoform').serializeFormJSON(),
+                    data: $('#taskform').serializeFormJSON(),
                     complete: function(xhr, status) {
-                        $("#todoform-modal").modal('hide')
+                        $("#taskform-modal").modal('hide')
                     },
                     error: function(xhr, status) {
                         // TODO
