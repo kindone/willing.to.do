@@ -54,9 +54,9 @@
                         <li role="presentation" class="active"><a href="#inbox-view" aria-controls="inbox-view" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-inbox"></span>
                             Inbox<span class="badge pull-right" ng-cloak>{{inbox.count}}</span></a></li>
                         <li role="presentation"><a href="#priority-view" aria-controls="priority-view" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-time"></span>
-                            Priority<span class="badge pull-right" ng-cloak>{{priority.count}}</span></a></li>
+                            Priority<!--<span class="badge pull-right" ng-cloak>{{priority.count}}</span>--></a></li>
                         <li role="presentation"><a href="#willing-view" aria-controls="willing-view" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-heart"></span>
-                            Willing<span class="badge pull-right" ng-cloak>{{willing.count}}</span></a></li>
+                            Willing<!--<span class="badge pull-right" ng-cloak>{{willing.count}}</span>--></a></li>
                         <li role="presentation"><a href="#project-view" aria-controls="project-view" role="tab" data-toggle="tab" id="project-view-tab"><span class="glyphicon glyphicon-folder-close"></span>
                             Projects</a></li>
                     </ul>
@@ -97,10 +97,13 @@
                 </div>
                 -->
                 </div>
+
+                @templates.taskhierarchy()
+
                 <div id="taskview-wrap">
                     <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane" id="inbox-view">
-                            inbox
+                        <div role="tabpanel" class="tab-pane active" id="inbox-view">
+                            @partials.inboxview()
                         </div>
                         <div role="tabpanel" class="tab-pane" id="priority-view">
                             priority
@@ -108,7 +111,7 @@
                         <div role="tabpanel" class="tab-pane" id="willing-view">
                             willing
                         </div>
-                        <div role="tabpanel" class="tab-pane active" id="project-view">
+                        <div role="tabpanel" class="tab-pane" id="project-view">
                             @partials.taskview()
                         </div>
                     </div>

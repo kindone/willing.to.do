@@ -1,7 +1,8 @@
 define [], () ->
   # our data to start with
   tasks = [
-    {id: 0, name: "<ROOT>", children: [1]}
+    {id: -2, name: "Inbox", children: [11]}
+    {id: 0, name: "Root", children: [1]}
     {id: 1, name: "code", parent: 0, children: [2]}
     {id: 2, name: "Willing.to.do", parent: 1, children:[3,4,9]}
     {id: 3, name: "Design and UX issues", parent: 2}
@@ -12,6 +13,7 @@ define [], () ->
     {id: 8, name: "main page should provide unauthorized access", parent: 6}
     {id: 9, name: "Client-side implementation", parent: 2, children: [10]}
     {id: 10, name: "angularjs integration", parent: 9}
+    {id: 11, name: "miscellaneous", parent: -2}
   ]
 
   tasks

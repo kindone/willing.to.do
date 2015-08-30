@@ -1,16 +1,18 @@
 define ['./TaskManager', './TaskUtils', './DefaultTasks',
         './ViewController',
         './TaskController',
+        './InboxController',
         './TaskFormController',
         './LabelController',
         './ProjectController'], (TaskManager, TaskUtils, DefaultTasks,
-   ViewController, TaskController, TaskFormController, LabelController, ProjectController) ->
+   ViewController, TaskController, InboxController, TaskFormController, LabelController, ProjectController) ->
 
   ngApp = angular.module "App", ['ui.tree']
   taskManager = new TaskManager(DefaultTasks)
   taskUtils = new TaskUtils(taskManager)
 
   new TaskController(ngApp, taskManager, taskUtils)
+  new InboxController(ngApp, taskManager, taskUtils)
   new ViewController(ngApp, taskManager, taskUtils)
   new TaskFormController(ngApp, taskManager, taskUtils)
   new LabelController(ngApp, taskManager, taskUtils)

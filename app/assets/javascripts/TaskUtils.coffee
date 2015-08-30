@@ -13,12 +13,14 @@ define [], () ->
       ancestry = []
       parent = if typeof(task.parent) != 'undefined' then @taskManager.findById(task.parent) else task.parent
       # traverse up recursively
-      while typeof(parent) != 'undefined' && parent.id != 0
+      while typeof(parent) != 'undefined'
         ancestry.unshift parent
         parent = if typeof(parent.parent) != 'undefined' then @taskManager.findById(parent.parent) else parent.parent
 
       ancestry.push(task) # ancestry includes self
+      console.log(ancestry)
       ancestry
+
 
     buildTaskTree: (task) ->
       taskTree = new TaskWithoutChildren(task)

@@ -3,7 +3,8 @@ define [], () ->
   class TaskManager
 
     constructor:(@tasks) ->
-      formTask = {id: -1, name: "<FORM>"}
+      # add pseudo tasks
+      formTask = {id: @formTaskId, name: "<FORM>"}
       @tasks.unshift(formTask)
       @tasksById = @genTasksByIdTable(@tasks)
 
@@ -15,8 +16,18 @@ define [], () ->
 
     formTaskId: -1
 
+    inboxId: -2
+
+    rootId: 0
+
     getFormTask: () ->
       @tasksById[@formTaskId]
+
+    getRoot: () ->
+      @tasksById[@rootId]
+
+    getInbox: () ->
+      @tasksById[@inboxId]
 
     rebuildIdTable: ->
       @tasksById = @genTasksByIdTable(@tasks)
@@ -43,6 +54,9 @@ define [], () ->
             @tasksById[parentId].children.push(newId)
 
     reorder: (id, parentId, index, newIndex) ->
+      if id < 0
+        return
+
       if !parentId
         parentId = 0
       arr = @tasksById[parentId].children
@@ -51,6 +65,8 @@ define [], () ->
       arr.splice(newIndex, 0, target) # insert at new index
 
     move: (id, parentId, index, newParentId, newIndex) ->
+      if id < 0
+        return
       arr = @tasksById[parentId].children
       newArr = @tasksById[newParentId].children
       target = @tasksById[parentId].children[index]
@@ -68,6 +84,8 @@ define [], () ->
 
 
     delete: (id) ->
+      if id < 0
+        return
       deleteTree = (id) =>
         task = @tasksById[id]
         if task.children
