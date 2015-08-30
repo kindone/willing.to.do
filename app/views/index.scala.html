@@ -2,10 +2,11 @@
 
 @layouts.main("willing.to.do") {
 
+    <!-- banner -->
     <header class="navbar navbar-default navbar-static-top bs-docs-nav" id="top" role="banner">
         <div class="container-fluid">
-            <nav class="collapse navbar-collapse bs-navbar-collapse row">
-                <div class="col-md-4 left-sidebar">
+            <nav id="navigation-bar" class="collapse navbar-collapse bs-navbar-collapse row">
+                <div id="navigation-bar-left" class="col-md-4 left-sidebar">
                     <ul class="nav navbar-nav">
                         <li>
                             <a href="@routes.Application.index()">W.T.D</a>
@@ -16,14 +17,14 @@
                         <li>
                             <a href="javascript:alert('TODO')">Help</a>
                         </li>
-                            <!--<li>
-                <form role="search">
-                    <input type="text" class="form-control" placeholder="Filter">
-                </form>
-            </li>-->
+                    <!--<li>
+                            <form role="search">
+                                <input type="text" class="form-control" placeholder="Filter">
+                            </form>
+                        </li>-->
                     </ul>
                 </div>
-                <div class="col-md-8">
+                <div id="navigation-bar-right" class="col-md-8">
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="javascript:alert('TODO')">
                             Settings</a></li>
@@ -49,13 +50,15 @@
             <div id="left-sidebar" class="col-xs-4">
 
                 <div id="unified-views" class="list-group" ng-controller="ViewController">
-                    <ul class="nav nav-pills nav-stacked">
-                        <li class="active"><a href="" ng-click=""><span class="glyphicon glyphicon-inbox"></span>
+                    <ul class="nav nav-pills nav-stacked" role="tablist">
+                        <li role="presentation" class="active"><a href="#inbox-view" aria-controls="inbox-view" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-inbox"></span>
                             Inbox<span class="badge pull-right" ng-cloak>{{inbox.count}}</span></a></li>
-                        <li><a href="" ng-click=""><span class="glyphicon glyphicon-time"></span>
+                        <li role="presentation"><a href="#priority-view" aria-controls="priority-view" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-time"></span>
                             Priority<span class="badge pull-right" ng-cloak>{{priority.count}}</span></a></li>
-                        <li><a href="" ng-click=""><span class="glyphicon glyphicon-heart"></span>
+                        <li role="presentation"><a href="#willing-view" aria-controls="willing-view" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-heart"></span>
                             Willing<span class="badge pull-right" ng-cloak>{{willing.count}}</span></a></li>
+                        <li role="presentation"><a href="#project-view" aria-controls="project-view" role="tab" data-toggle="tab" id="project-view-tab"><span class="glyphicon glyphicon-folder-close"></span>
+                            Projects</a></li>
                     </ul>
                 </div>
                 <div id="individual-views">
@@ -94,10 +97,27 @@
                 </div>
                 -->
                 </div>
-                @partials.todoview()
+                <div id="taskview-wrap">
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane" id="inbox-view">
+                            inbox
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="priority-view">
+                            priority
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="willing-view">
+                            willing
+                        </div>
+                        <div role="tabpanel" class="tab-pane active" id="project-view">
+                            @partials.todoview()
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>
-        @partials.todoform()
+        <div id="taskform-wrap">
+            @partials.todoform()
+        </div>
     </div>
 }

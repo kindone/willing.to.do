@@ -13,6 +13,7 @@ define [], () ->
         $scope.projects = buildProjects()
 
         $scope.setCurrentProject = (taskid) ->
+          $('#project-view-tab').tab('show')
           task = taskManager.findById(taskid)
           $rootScope.scopeTask = task
           $rootScope.$emit 'scopeChange', task
